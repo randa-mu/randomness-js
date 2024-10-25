@@ -1,7 +1,6 @@
 # Compiler files
 cache/
 out/
-src/generated
 node_modules
 index.js
 *.d.ts
