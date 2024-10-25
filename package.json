@@ -1,0 +1,49 @@
+{
+  "name": "@randamu/randomness-js",
+  "version": "0.0.1",
+  "description": "A library for consuming, verifying and using randomness from the dcrypt network",
+  "types": "index.d.ts",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && npm run build:js && npm run build:types",
+    "build:js": "esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=index.js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "clean": "rm -rf index.js index.d.ts",
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix",
+    "test": "jest ./test/*.test.ts"
+  },
+  "keywords": [
+    "randomness",
+    "vrf",
+    "ethereum"
+  ],
+  "author": "CluEleSsUK",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/randa-mu/marshmono/issues"
+  },
+  "homepage": "https://github.com/randa-mu/marshmono#readme",
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "commander": "^12.1.0",
+    "ethers": "^6.13.4",
+    "mcl-wasm": "^1.7.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.7.5",
+    "esbuild": "^0.24.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0"
+  },
+  "engines": {
+    "node": ">= 22.0.0"
+  }
+}
