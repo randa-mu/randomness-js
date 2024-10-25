@@ -14,19 +14,21 @@
     "test": "jest ./test/*.test.ts"
   },
   "keywords": [
+    "dcrypt",
+    "randamu",
     "randomness",
     "vrf",
+    "evm",
     "ethereum"
   ],
   "author": "CluEleSsUK",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/randa-mu/marshmono/issues"
+    "url": "https://github.com/randa-mu/randomness-js/issues"
   },
-  "homepage": "https://github.com/randa-mu/marshmono#readme",
+  "homepage": "https://github.com/randa-mu/randomness-js#readme",
   "dependencies": {
     "buffer": "^6.0.3",
-    "commander": "^12.1.0",
     "ethers": "^6.13.4",
     "mcl-wasm": "^1.7.0"
   },
