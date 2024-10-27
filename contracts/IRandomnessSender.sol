@@ -3,10 +3,7 @@ pragma solidity 0.8.24;
 
 import "./TypesLib.sol";
 
-// todo subscription and payments
-// todo we could embed the following for subscription and payments - subscriptionID, numberOfRequestTxConfirmations, callbackGasLimit, numRandomValues
-// todo check for potential gaps in using uint256 as id compared to bytes32
-interface IRandomnessSender {
+interface IRandomnessRequester {
     /**
      * @notice Requests the generation of a random value for a specified blockchain height.
      * @dev Initiates a randomness request.
