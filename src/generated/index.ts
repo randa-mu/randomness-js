@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { IRandomnessReceiver } from "./IRandomnessReceiver";
-export type { IRandomnessSender } from "./IRandomnessSender";
+export type { IRandomnessRequester } from "./IRandomnessRequester";
 export type { RandomnessReceiverBase } from "./RandomnessReceiverBase";
-export type { RandomnessSender } from "./RandomnessSender";
+export type { RandomnessRequester } from "./RandomnessRequester";
 export { IRandomnessReceiver__factory } from "./factories/IRandomnessReceiver__factory";
-export { IRandomnessSender__factory } from "./factories/IRandomnessSender__factory";
+export { IRandomnessRequester__factory } from "./factories/IRandomnessRequester__factory";
 export { RandomnessReceiverBase__factory } from "./factories/RandomnessReceiverBase__factory";
-export { RandomnessSender__factory } from "./factories/RandomnessSender__factory";
+export { RandomnessRequester__factory } from "./factories/RandomnessRequester__factory";

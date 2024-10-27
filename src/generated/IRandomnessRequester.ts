@@ -35,7 +35,7 @@ export declare namespace TypesLib {
   ] & { requestID: bigint; nonce: bigint; callback: string };
 }
 
-export interface IRandomnessSenderInterface extends Interface {
+export interface IRandomnessRequesterInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "getAllRequests"
@@ -76,11 +76,11 @@ export interface IRandomnessSenderInterface extends Interface {
   ): Result;
 }
 
-export interface IRandomnessSender extends BaseContract {
-  connect(runner?: ContractRunner | null): IRandomnessSender;
+export interface IRandomnessRequester extends BaseContract {
+  connect(runner?: ContractRunner | null): IRandomnessRequester;
   waitForDeployment(): Promise<this>;
 
-  interface: IRandomnessSenderInterface;
+  interface: IRandomnessRequesterInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,

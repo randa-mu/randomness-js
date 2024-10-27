@@ -9,5 +9,5 @@ interface IRandomnessReceiver {
      * @param requestID The unique identifier of the randomness request.
      * @param randomness The generated random value, provided as a `bytes32` type.
      */
-    function receiveRandomness(uint256 requestID, bytes signature) external;
+    function receiveRandomness(uint256 requestID, bytes32 randomness) external;
 }

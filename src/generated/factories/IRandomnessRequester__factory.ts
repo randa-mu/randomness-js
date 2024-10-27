@@ -4,9 +4,9 @@
 
 import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
-  IRandomnessSender,
-  IRandomnessSenderInterface,
-} from "../IRandomnessSender";
+  IRandomnessRequester,
+  IRandomnessRequesterInterface,
+} from "../IRandomnessRequester";
 
 const _abi = [
   {
@@ -126,15 +126,15 @@ const _abi = [
   },
 ] as const;
 
-export class IRandomnessSender__factory {
+export class IRandomnessRequester__factory {
   static readonly abi = _abi;
-  static createInterface(): IRandomnessSenderInterface {
-    return new Interface(_abi) as IRandomnessSenderInterface;
+  static createInterface(): IRandomnessRequesterInterface {
+    return new Interface(_abi) as IRandomnessRequesterInterface;
   }
   static connect(
     address: string,
     runner?: ContractRunner | null
-  ): IRandomnessSender {
-    return new Contract(address, _abi, runner) as unknown as IRandomnessSender;
+  ): IRandomnessRequester {
+    return new Contract(address, _abi, runner) as unknown as IRandomnessRequester;
   }
 }

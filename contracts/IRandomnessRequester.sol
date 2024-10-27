@@ -11,6 +11,7 @@ interface IRandomnessRequester {
      * @return requestID The unique identifier assigned to this randomness request.
      */
     function requestRandomness() external returns (uint256 requestID);
+
     /**
      * @notice Retrieves a specific request by its ID.
      * @dev This function returns the Request struct associated with the given requestId.
@@ -25,6 +26,7 @@ interface IRandomnessRequester {
      * @return An array containing all the Request structs.
      */
     function getAllRequests() external view returns (TypesLib.RandomnessRequest[] memory);
+
     /**
      * @notice Generates a message from the given request.
      * @dev Creates a hash-based message using the `DST` and `nonce` fields of the `Request` struct.

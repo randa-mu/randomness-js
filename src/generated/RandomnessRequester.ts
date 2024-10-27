@@ -37,7 +37,7 @@ export declare namespace TypesLib {
   ] & { requestID: bigint; nonce: bigint; callback: string };
 }
 
-export interface RandomnessSenderInterface extends Interface {
+export interface RandomnessRequesterInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
@@ -290,11 +290,11 @@ export namespace RoleRevokedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface RandomnessSender extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessSender;
+export interface RandomnessRequester extends BaseContract {
+  connect(runner?: ContractRunner | null): RandomnessRequester;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessSenderInterface;
+  interface: RandomnessRequesterInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
