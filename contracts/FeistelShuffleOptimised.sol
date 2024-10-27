@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MIT
+// credit to our beloved friend Kevin Charm (https://github.com/kevincharm/) for this implementation
+// which we pilfered from one of his repos
 pragma solidity 0.8.24;
 
 /// @title FeistelShuffleOptimised
