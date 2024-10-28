@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import {FeistelShuffleOptimised} from "./FeistelShuffleOptimised.sol";
 
 library Randomness {
-    function getRandomnessProvider() view returns(address randomnessProvider){
+    function getRandomnessProvider() public pure returns(address randomnessProvider){
         return 0x4633bbdb16153B325bbcef4Baa770d718Eb552b8;
     }
 
