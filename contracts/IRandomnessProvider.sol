@@ -3,7 +3,7 @@ pragma solidity 0.8.24;
 
 import "./TypesLib.sol";
 
-interface IRandomnessRequester {
+interface IRandomnessProvider {
     /**
      * @notice Requests the generation of a random value for a specified blockchain height.
      * @dev Initiates a randomness request.

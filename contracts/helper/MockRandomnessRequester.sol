@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import "../IRandomnessReceiver.sol";
-import "../IRandomnessRequester.sol";
+import "../IRandomnessProvider.sol";
 
-contract MockRandomnessRequester is IRandomnessRequester {
+contract MockRandomnessRequester is IRandomnessProvider {
     mapping(uint256 => address) requestIdToReceiver;    
     uint256 public lastRequestId;
     uint256[] requests;
