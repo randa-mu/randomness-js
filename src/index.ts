@@ -13,7 +13,7 @@ import {bytesEqual, BlsBn254} from "./bls-bn254"
 import {RandomnessRequester, RandomnessRequester__factory} from "./generated"
 
 export const VERIFIER_PUBLIC_KEY = "0xcaf65381e7d3d3379164abb88f94ee5675c748b8a0113987fa0b38cc9ed39126bf3702fdc4f4572f0260ffebe969a0165e401fb361508a1098b025510ae26328"
-export const RANDOMNESS_ADDRESS_TESTNET = "0x901C774780722bfd89805b1f6cD700CE49920A4d"
+export const RANDOMNESS_ADDRESS_TESTNET = "0x8bAe3eB71458B7339AA362fd7F26BF1B95677BB5"
 export type RandomnessVerificationParameters = {
     requestID: bigint,
     nonce: bigint,
