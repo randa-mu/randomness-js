@@ -5,7 +5,7 @@ library TypesLib {
 
     // RandomnessRequest stores details needed to verify the signature
     struct RandomnessRequest {
-        uint256 requestID;
+        uint256 requestId;
         address callback;
     }
 
