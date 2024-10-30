@@ -26,8 +26,8 @@ export class Randomness {
     private bls: BlsBn254 | undefined
     private pk: G2 | undefined
 
-    constructor(private readonly rpc: Signer | Provider) {
-        this.contract = RandomnessRequester__factory.connect(RANDOMNESS_ADDRESS_TESTNET, rpc)
+    constructor(private readonly rpc: Signer | Provider, randomnessContractAddress: string = RANDOMNESS_ADDRESS_TESTNET) {
+        this.contract = RandomnessRequester__factory.connect(randomnessContractAddress, rpc)
     }
 
     async requestRandomness(confirmations = 1, timeoutMs = 30000): Promise<RandomnessVerificationParameters> {
