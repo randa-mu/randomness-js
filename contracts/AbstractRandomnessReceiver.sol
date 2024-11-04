@@ -13,7 +13,7 @@ abstract contract AbstractRandomnessReceiver {
         _;
     }
 
-    constructor(address _randomnessRequester) public {
+    constructor(address _randomnessRequester) {
         randomnessRequester = _randomnessRequester;
     }
 }
