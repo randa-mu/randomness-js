@@ -3,14 +3,14 @@ pragma solidity 0.8.24;
 
 import "./TypesLib.sol";
 
-interface IRandomnessRequester {
+interface IRandomnessProvider {
     /**
      * @notice Requests the generation of a random value for a specified blockchain height.
      * @dev Initiates a randomness request.
-     * The generated randomness will be associated with the returned `requestID`.
-     * @return requestID The unique identifier assigned to this randomness request.
+     * The generated randomness will be associated with the returned `requestId`.
+     * @return requestId The unique identifier assigned to this randomness request.
      */
-    function requestRandomness() external returns (uint256 requestID);
+    function requestRandomness() external returns (uint256 requestId);
 
     /**
      * @notice Retrieves a specific request by its ID.
