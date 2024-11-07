@@ -12,8 +12,4 @@ abstract contract AbstractRandomnessReceiver {
         if (msg.sender != RANDOMNESS_PROVIDER) revert NotAuthorizedRandomnessProvider();
         _;
     }
-
-    constructor(address _randomnessProvider) {
-        RANDOMNESS_PROVIDER = _randomnessProvider;
-    }
 }
