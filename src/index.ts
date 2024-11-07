@@ -13,7 +13,7 @@ import {bytesEqual, BlsBn254} from "./bls-bn254"
 import {RandomnessRequester, RandomnessRequester__factory} from "./generated"
 
 export const VERIFIER_PUBLIC_KEY = "0xcaf65381e7d3d3379164abb88f94ee5675c748b8a0113987fa0b38cc9ed39126bf3702fdc4f4572f0260ffebe969a0165e401fb361508a1098b025510ae26328"
-export const RANDOMNESS_ADDRESS_TESTNET = "0x901C774780722bfd89805b1f6cD700CE49920A4d"
+export const RANDOMNESS_ADDRESS_TESTNET = "0x4633bbdb16153b325bbcef4baa770d718eb552b8"
 export type RandomnessVerificationParameters = {
     requestID: bigint,
     nonce: bigint,
@@ -26,8 +26,8 @@ export class Randomness {
     private bls: BlsBn254 | undefined
     private pk: G2 | undefined
 
-    constructor(private readonly rpc: Signer | Provider) {
-        this.contract = RandomnessRequester__factory.connect(RANDOMNESS_ADDRESS_TESTNET, rpc)
+    constructor(private readonly rpc: Signer | Provider, randomnessContractAddress: string = RANDOMNESS_ADDRESS_TESTNET) {
+        this.contract = RandomnessRequester__factory.connect(randomnessContractAddress, rpc)
     }
 
     async requestRandomness(confirmations = 1, timeoutMs = 30000): Promise<RandomnessVerificationParameters> {
