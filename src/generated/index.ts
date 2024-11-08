@@ -8,4 +8,4 @@ export type { RandomnessRequester } from "./RandomnessRequester";
 export { IRandomnessReceiver__factory } from "./factories/IRandomnessReceiver__factory";
 export { IRandomnessRequester__factory } from "./factories/IRandomnessRequester__factory";
 export { RandomnessReceiverBase__factory } from "./factories/RandomnessReceiverBase__factory";
-export { RandomnessRequester__factory } from "./factories/RandomnessRequester__factory";
+export { RandomnessSender__factory } from "./factories/RandomnessSender__factory";
