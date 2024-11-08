@@ -6,10 +6,13 @@ import {
     getBytes,
     keccak256,
     randomBytes,
-    solidityPacked, BytesLike,
+    solidityPacked,
+    BytesLike,
+    isHexString
 } from "ethers"
 import * as mcl from "mcl-wasm"
 import type {G1, G2, Fr, Fp, Fp2} from "mcl-wasm"
+import {utf8ToBytes} from "@noble/curves/abstract/utils"
 
 /**
  * Mcl wrapper for BLS operations
@@ -128,16 +131,8 @@ class BlsBn254 {
         const p1 = this.mapToPoint(toHex(e1))
         const p = mcl.add(p0, p1)
         p.normalize()
+
         return p
-    }
-
-    public concatenateUint8Arrays(domain: Uint8Array, msg: Uint8Array): Uint8Array {
-        const concatenatedArray = new Uint8Array(domain.length + msg.length);
-
-        concatenatedArray.set(domain, 0); // Set the first part
-        concatenatedArray.set(msg, domain.length); // Set the second part
-
-        return concatenatedArray;
     }
 
     public serialiseFp(p: Fp | Fp2): `0x${string}` {
@@ -167,20 +162,59 @@ class BlsBn254 {
         ]
     }
 
+    public deserialiseFp2([x, y]: [bigint, bigint]): Fp2 {
+        const xx = new mcl.Fp()
+        const yy = new mcl.Fp()
+        xx.setStr(toHex(x), 16)
+        yy.setStr(toHex(y), 16)
+
+        const out = new mcl.Fp2()
+        out.set_a(xx)
+        out.set_b(yy)
+
+        return out
+    }
+
+    public g1FromEvmHex(input: BytesLike) {
+        const hex = hexlify(input)
+        const trimmed = hex.startsWith("0x") ? hex.slice(2) : hex
+        const x = trimmed.slice(0, trimmed.length / 2)
+        const y = trimmed.slice(trimmed.length / 2, trimmed.length)
+
+        return this.g1FromEvm(BigInt(`0x${x}`), BigInt(`0x${y}`))
+    }
+
     public g1FromEvm(g1X: bigint, g1Y: bigint) {
-        const x = g1X.toString(16).padStart(64, "0")
+        const x = toHex(g1X)
+        const y = toHex(g1Y)
+
         const Mx = this.newFp()
-        Mx.setStr(x, 16)
-        const y = g1Y.toString(16).padStart(64, "0")
         const My = this.newFp()
-        My.setStr(y, 16)
         const Mz = this.newFp()
+        Mx.setStr(x, 16)
+        My.setStr(y, 16)
         Mz.setInt(1)
-        const M: G1 = this.newG1()
+
+        const M = this.newG1()
         M.setX(Mx)
         M.setY(My)
         M.setZ(Mz)
         return M
+    }
+
+    public g2FromEvm([x1, x2, y1, y2]: [bigint, bigint, bigint, bigint]) {
+        const out = this.newG2()
+        out.setX(this.deserialiseFp2([x1, x2]))
+        out.setY(this.deserialiseFp2([y1, y2]))
+        // this is swapped because EVM (:
+        out.setZ(this.deserialiseFp2([1n, 0n]))
+        return out
+    }
+
+    public g2From(input: BytesLike): G2 {
+        const out = this.G2.clone()
+        out.deserialize(bytes(input))
+        return out
     }
 
     public createKeyPair(_secretKey?: `0x${string}`) {
@@ -191,22 +225,6 @@ class BlsBn254 {
         const secretKey: Fr = new mcl.Fr()
         secretKey.setHashOf(_secretKey)
         const pubKey: G2 = mcl.mul(this.G2, secretKey)
-        pubKey.normalize()
-        return {
-            secretKey,
-            _secretKey,
-            pubKey,
-        }
-    }
-
-    public createKeyPairG1PublicKey(_secretKey?: `0x${string}`) {
-        if (!_secretKey) {
-            _secretKey = hexlify(randomBytes(31)) as `0x${string}`
-        }
-
-        const secretKey: Fr = new mcl.Fr()
-        secretKey.setHashOf(_secretKey)
-        const pubKey: G1 = mcl.mul(this.G1, secretKey)
         pubKey.normalize()
         return {
             secretKey,
@@ -226,14 +244,6 @@ class BlsBn254 {
 
     public verify(h_m: G1, pk: G2, signature: G1): boolean {
         return mcl.pairing(h_m, pk).isEqual(mcl.pairing(signature, this.G2))
-    }
-
-    public toArgs(pubKey: G2, M: G1, signature: G1) {
-        return {
-            signature: this.serialiseG1Point(signature),
-            pubKey: this.serialiseG2Point(pubKey),
-            M: this.serialiseG1Point(M),
-        }
     }
 
     public mapToPoint(eHex: `0x${string}`): G1 {
@@ -356,76 +366,13 @@ class BlsBn254 {
         return x
     }
 
-    public aggregate(acc: G1 | G2, other: G1 | G2) {
-        const _acc = mcl.add(acc, other);
-        _acc.normalize();
-        return _acc;
+}
+
+function bytes(b: BytesLike): Uint8Array {
+    if (typeof b === "string" && !isHexString(b)) {
+        return utf8ToBytes(b)
     }
-
-    public g1From(input: BytesLike): G1 {
-        const out = this.G1.clone()
-        if (typeof input === "string") {
-            out.setStr(input)
-        } else {
-            out.deserialize(input)
-        }
-
-        return out
-    }
-
-    public g2From(input: BytesLike): G2 {
-        const out = this.G2.clone()
-        if (typeof input === "string") {
-            out.setStr(input)
-        } else {
-            out.deserialize(input)
-        }
-
-        return out
-    }
-
-}
-
-export function byteSwap(hex: string, n: number) {
-    const bytes = getBytes("0x" + hex)
-    if (bytes.byteLength !== n) throw new Error(`Invalid length: ${bytes.byteLength}`)
-    return Array.from(bytes)
-        .reverse()
-        .map((v) => v.toString(16).padStart(2, "0"))
-        .join("")
-}
-
-// mcl format:      x = a + bi
-// kyber format:    x = b + ai
-export function kyberMarshalG2(p: G2) {
-    return [
-        byteSwap(p.getX().get_b().serializeToHexStr(), 32),
-        byteSwap(p.getX().get_a().serializeToHexStr(), 32),
-        byteSwap(p.getY().get_b().serializeToHexStr(), 32),
-        byteSwap(p.getY().get_a().serializeToHexStr(), 32),
-    ].join("")
-}
-
-export function kyberMarshalG1(p: G1) {
-    return [
-        byteSwap(p.getX().serializeToHexStr(), 32),
-        byteSwap(p.getY().serializeToHexStr(), 32),
-    ].join("")
-}
-
-export function kyberG1ToEvm(g1: Uint8Array): [bigint, bigint] {
-    const p = [g1.slice(0, 32), g1.slice(32, 64)].map((sigBuf) => BigInt(hexlify(sigBuf))) as [
-        bigint,
-        bigint,
-    ]
-    return p
-}
-
-export function kyberG2ToEvm(g2: Uint8Array): [bigint, bigint, bigint, bigint] {
-    const p = [g2.slice(32, 64), g2.slice(0, 32), g2.slice(96, 128), g2.slice(64, 96)].map((pBuf) =>
-        BigInt(hexlify(pBuf)),
-    ) as [bigint, bigint, bigint, bigint]
-    return p
+    return getBytes(b)
 }
 
 function mod(a: bigint, b: bigint) {
