@@ -137,7 +137,8 @@ function createRandomnessLogListener(nonce: bigint, cb: (arg: RandomnessVerifica
             console.error("got a log without args somehow...")
             return
         }
-        cb({...logs[0].args, nonce})
+        const [requestID, randomness, signature] = logs[0].args
+        cb({requestID, randomness, signature, nonce})
     }
 }
 
