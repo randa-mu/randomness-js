@@ -82,11 +82,13 @@ export class Randomness {
             const randomnessListener = createRandomnessListener(nonce, randomnessCallback)
             this.contract.once(successFilter, randomnessListener)
             this.contract.once(failureFilter, randomnessListener)
+
+            const randomnessFilter = createRandomnessLogListener(nonce, randomnessCallback)
             this.contract.queryFilter(successFilter, -blockLookBack)
-                .then(randomnessListener)
+                .then(randomnessFilter)
                 .catch(reject)
             this.contract.queryFilter(failureFilter, -blockLookBack)
-                .then(randomnessListener)
+                .then(randomnessFilter)
                 .catch(reject)
 
             setTimeout(() => {
@@ -121,9 +123,21 @@ export class Randomness {
 
 function createRandomnessListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void): TypedListener<TypedContractEvent> {
     return (log: RandomnessCallbackSuccessEvent.Log | RandomnessCallbackFailedEvent.Log) => {
-        console.log(`received requestID ${log.args.requestID}`)
         const [requestID, randomness, signature] = log.args
         cb({requestID, nonce, randomness, signature})
+    }
+}
+
+function createRandomnessLogListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void) {
+    return (logs: RandomnessCallbackSuccessEvent.Log[] | RandomnessCallbackFailedEvent.Log[]) => {
+        if (logs.length === 0) {
+            return
+        }
+        if (!logs[0].args) {
+            console.error("got a log without args somehow...")
+            return
+        }
+        cb({...logs[0].args, nonce})
     }
 }
 
