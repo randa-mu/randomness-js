@@ -18,7 +18,7 @@ import {encodeParams, extractSingleLog} from "./ethers-helpers"
 import {withTimeout} from "./misc"
 import {TypedContractEvent, TypedListener} from "./generated/common"
 
-const defaultContractAddress = "0xba0a7e16c66be57510e5c44ac2fcdec09241711f"
+const defaultContractAddress = "0xe1051fbd7ed11716b306aefec409275b17aadcbf"
 // the verifier's BLS public key arranged as magical bigints to avoid promises in creation
 export const VERIFIER_PUBLIC_KEY: [bigint, bigint, bigint, bigint] = [
     17445541620214498517833872661220947475697073327136585274784354247720096233162n,
