@@ -5,7 +5,7 @@ import {FeistelShuffleOptimised} from "./FeistelShuffleOptimised.sol";
 
 library Randomness {
     function getRandomnessProvider() public pure returns(address randomnessProvider){
-        return 0x4633bbdb16153B325bbcef4Baa770d718Eb552b8;
+        return 0xe1051fbd7ed11716b306aefec409275b17aadcbf;
     }
 
     /**

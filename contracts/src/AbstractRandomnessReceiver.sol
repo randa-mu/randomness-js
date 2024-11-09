@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 import {IRandomnessReceiver} from "./IRandomnessReceiver.sol";
 
 abstract contract AbstractRandomnessReceiver {
-    address public immutable RANDOMNESS_PROVIDER = 0x4633bbdb16153B325bbcef4Baa770d718Eb552b8;
+    address public immutable RANDOMNESS_PROVIDER = 0xe1051fbd7ed11716b306aefec409275b17aadcbf;
 
     error NotAuthorizedRandomnessProvider();
 
