@@ -1,6 +1,6 @@
 {
   "name": "@randamu/randomness-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A library for consuming, verifying and using randomness from the dcrypt network",
   "types": "index.d.ts",
   "main": "index.js",

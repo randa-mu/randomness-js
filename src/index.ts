@@ -12,10 +12,6 @@ import {
     RandomnessCallbackSuccessEvent,
     RandomnessSender
 } from "./generated/RandomnessSender"
-import {
-    SignatureCallbackFailedEvent,
-    SignatureSender
-} from "./generated/SignatureSender"
 import {BlsBn254, bytesEqual} from "./bls-bn254"
 import {encodeParams, extractSingleLog} from "./ethers-helpers"
 import {withTimeout} from "./misc"
