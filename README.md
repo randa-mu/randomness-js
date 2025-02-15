@@ -69,3 +69,5 @@ main().catch((error) => {
   console.error("Error:", error);
 });
 ```
+
+For more examples, please see the [unit tests](./test/randomness.test.ts).
