@@ -57,6 +57,7 @@ async function main() {
     const {requestID, nonce, randomness, signature} = await randomness.requestRandomness();
 
     // we can also fetch the randomness request response / data for a specific request id
+    // randomness, and signature are "0x" if the request is not yet fulfilled by the randomness oracle
     // const {requestID, nonce, randomness, signature} = await randomness.fetchRandomnessRequest(<requestID input here>);
 
     // to verify the randomness request response we can use the verify function
