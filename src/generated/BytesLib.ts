@@ -3,7 +3,6 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
@@ -20,35 +19,25 @@ import type {
   TypedContractMethod,
 } from "./common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
-  getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
-  ): FunctionFragment;
+export interface BytesLibInterface extends Interface {
+  getFunction(nameOrSignature: "decodeBytesToUint"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "randomnessSender",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "receiveRandomness",
-    values: [BigNumberish, BytesLike]
+    functionFragment: "decodeBytesToUint",
+    values: [BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "randomnessSender",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "receiveRandomness",
+    functionFragment: "decodeBytesToUint",
     data: BytesLike
   ): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface BytesLib extends BaseContract {
+  connect(runner?: ContractRunner | null): BytesLib;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: BytesLibInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,28 +76,15 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  randomnessSender: TypedContractMethod<[], [string], "view">;
-
-  receiveRandomness: TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
-    [void],
-    "nonpayable"
-  >;
+  decodeBytesToUint: TypedContractMethod<[data: BytesLike], [bigint], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "randomnessSender"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "receiveRandomness"
-  ): TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
-    [void],
-    "nonpayable"
-  >;
+    nameOrSignature: "decodeBytesToUint"
+  ): TypedContractMethod<[data: BytesLike], [bigint], "view">;
 
   filters: {};
 }

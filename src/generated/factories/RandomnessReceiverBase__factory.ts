@@ -11,6 +11,19 @@ import type {
 const _abi = [
   {
     type: "function",
+    name: "randomnessSender",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IRandomnessSender",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "receiveRandomness",
     inputs: [
       {

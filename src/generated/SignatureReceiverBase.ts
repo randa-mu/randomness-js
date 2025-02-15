@@ -20,35 +20,35 @@ import type {
   TypedContractMethod,
 } from "./common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
+export interface SignatureReceiverBaseInterface extends Interface {
   getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
+    nameOrSignature: "receiveSignature" | "signatureSender"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "randomnessSender",
-    values?: undefined
+    functionFragment: "receiveSignature",
+    values: [BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "receiveRandomness",
-    values: [BigNumberish, BytesLike]
+    functionFragment: "signatureSender",
+    values?: undefined
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "randomnessSender",
+    functionFragment: "receiveSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "receiveRandomness",
+    functionFragment: "signatureSender",
     data: BytesLike
   ): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface SignatureReceiverBase extends BaseContract {
+  connect(runner?: ContractRunner | null): SignatureReceiverBase;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: SignatureReceiverBaseInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,28 +87,28 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  randomnessSender: TypedContractMethod<[], [string], "view">;
-
-  receiveRandomness: TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
+  receiveSignature: TypedContractMethod<
+    [requestID: BigNumberish, signature: BytesLike],
     [void],
     "nonpayable"
   >;
+
+  signatureSender: TypedContractMethod<[], [string], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "randomnessSender"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "receiveRandomness"
+    nameOrSignature: "receiveSignature"
   ): TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
+    [requestID: BigNumberish, signature: BytesLike],
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "signatureSender"
+  ): TypedContractMethod<[], [string], "view">;
 
   filters: {};
 }

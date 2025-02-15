@@ -3,7 +3,6 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
@@ -18,37 +17,27 @@ import type {
   TypedEventLog,
   TypedListener,
   TypedContractMethod,
-} from "./common";
+} from "../common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
-  getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
-  ): FunctionFragment;
+export interface IERC1822ProxiableInterface extends Interface {
+  getFunction(nameOrSignature: "proxiableUUID"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "randomnessSender",
+    functionFragment: "proxiableUUID",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "receiveRandomness",
-    values: [BigNumberish, BytesLike]
-  ): string;
 
   decodeFunctionResult(
-    functionFragment: "randomnessSender",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "receiveRandomness",
+    functionFragment: "proxiableUUID",
     data: BytesLike
   ): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface IERC1822Proxiable extends BaseContract {
+  connect(runner?: ContractRunner | null): IERC1822Proxiable;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: IERC1822ProxiableInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,28 +76,15 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  randomnessSender: TypedContractMethod<[], [string], "view">;
-
-  receiveRandomness: TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
-    [void],
-    "nonpayable"
-  >;
+  proxiableUUID: TypedContractMethod<[], [string], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "randomnessSender"
+    nameOrSignature: "proxiableUUID"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "receiveRandomness"
-  ): TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
-    [void],
-    "nonpayable"
-  >;
 
   filters: {};
 }

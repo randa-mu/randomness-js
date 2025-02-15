@@ -8,6 +8,7 @@ import type {
   FunctionFragment,
   Result,
   Interface,
+  AddressLike,
   ContractRunner,
   ContractMethod,
   Listener,
@@ -20,35 +21,34 @@ import type {
   TypedContractMethod,
 } from "./common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
+export interface RandomnessInterface extends Interface {
   getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
+    nameOrSignature: "DST" | "selectArrayIndices" | "verify"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "DST", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "randomnessSender",
-    values?: undefined
+    functionFragment: "selectArrayIndices",
+    values: [BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "receiveRandomness",
-    values: [BigNumberish, BytesLike]
+    functionFragment: "verify",
+    values: [AddressLike, AddressLike, BytesLike, BigNumberish, AddressLike]
   ): string;
 
+  decodeFunctionResult(functionFragment: "DST", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "randomnessSender",
+    functionFragment: "selectArrayIndices",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "receiveRandomness",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "verify", data: BytesLike): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface Randomness extends BaseContract {
+  connect(runner?: ContractRunner | null): Randomness;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: RandomnessInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,12 +87,28 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  randomnessSender: TypedContractMethod<[], [string], "view">;
+  DST: TypedContractMethod<[], [string], "view">;
 
-  receiveRandomness: TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
-    [void],
-    "nonpayable"
+  selectArrayIndices: TypedContractMethod<
+    [
+      lengthOfArray: BigNumberish,
+      countToDraw: BigNumberish,
+      signature: BytesLike
+    ],
+    [bigint[]],
+    "view"
+  >;
+
+  verify: TypedContractMethod<
+    [
+      randomnessContract: AddressLike,
+      signatureContract: AddressLike,
+      signature: BytesLike,
+      requestID: BigNumberish,
+      requester: AddressLike
+    ],
+    [boolean],
+    "view"
   >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
@@ -100,14 +116,31 @@ export interface RandomnessReceiverBase extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "randomnessSender"
+    nameOrSignature: "DST"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "receiveRandomness"
+    nameOrSignature: "selectArrayIndices"
   ): TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
-    [void],
-    "nonpayable"
+    [
+      lengthOfArray: BigNumberish,
+      countToDraw: BigNumberish,
+      signature: BytesLike
+    ],
+    [bigint[]],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "verify"
+  ): TypedContractMethod<
+    [
+      randomnessContract: AddressLike,
+      signatureContract: AddressLike,
+      signature: BytesLike,
+      requestID: BigNumberish,
+      requester: AddressLike
+    ],
+    [boolean],
+    "view"
   >;
 
   filters: {};

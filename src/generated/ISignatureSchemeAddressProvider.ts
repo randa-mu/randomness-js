@@ -3,11 +3,11 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
   Interface,
+  AddressLike,
   ContractRunner,
   ContractMethod,
   Listener,
@@ -20,35 +20,46 @@ import type {
   TypedContractMethod,
 } from "./common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
+export interface ISignatureSchemeAddressProviderInterface extends Interface {
   getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
+    nameOrSignature:
+      | "getSignatureSchemeAddress"
+      | "isSupportedScheme"
+      | "updateSignatureScheme"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "randomnessSender",
-    values?: undefined
+    functionFragment: "getSignatureSchemeAddress",
+    values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "receiveRandomness",
-    values: [BigNumberish, BytesLike]
+    functionFragment: "isSupportedScheme",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateSignatureScheme",
+    values: [string, AddressLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "randomnessSender",
+    functionFragment: "getSignatureSchemeAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "receiveRandomness",
+    functionFragment: "isSupportedScheme",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateSignatureScheme",
     data: BytesLike
   ): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface ISignatureSchemeAddressProvider extends BaseContract {
+  connect(runner?: ContractRunner | null): ISignatureSchemeAddressProvider;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: ISignatureSchemeAddressProviderInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,10 +98,16 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  randomnessSender: TypedContractMethod<[], [string], "view">;
+  getSignatureSchemeAddress: TypedContractMethod<
+    [schemeID: string],
+    [string],
+    "view"
+  >;
 
-  receiveRandomness: TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
+  isSupportedScheme: TypedContractMethod<[schemeID: string], [boolean], "view">;
+
+  updateSignatureScheme: TypedContractMethod<
+    [schemeID: string, schemeAddress: AddressLike],
     [void],
     "nonpayable"
   >;
@@ -100,12 +117,15 @@ export interface RandomnessReceiverBase extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "randomnessSender"
-  ): TypedContractMethod<[], [string], "view">;
+    nameOrSignature: "getSignatureSchemeAddress"
+  ): TypedContractMethod<[schemeID: string], [string], "view">;
   getFunction(
-    nameOrSignature: "receiveRandomness"
+    nameOrSignature: "isSupportedScheme"
+  ): TypedContractMethod<[schemeID: string], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "updateSignatureScheme"
   ): TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
+    [schemeID: string, schemeAddress: AddressLike],
     [void],
     "nonpayable"
   >;

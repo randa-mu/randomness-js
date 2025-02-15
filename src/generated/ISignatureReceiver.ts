@@ -20,35 +20,25 @@ import type {
   TypedContractMethod,
 } from "./common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
-  getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
-  ): FunctionFragment;
+export interface ISignatureReceiverInterface extends Interface {
+  getFunction(nameOrSignature: "receiveSignature"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "randomnessSender",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "receiveRandomness",
+    functionFragment: "receiveSignature",
     values: [BigNumberish, BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "randomnessSender",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "receiveRandomness",
+    functionFragment: "receiveSignature",
     data: BytesLike
   ): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface ISignatureReceiver extends BaseContract {
+  connect(runner?: ContractRunner | null): ISignatureReceiver;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: ISignatureReceiverInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,10 +77,8 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  randomnessSender: TypedContractMethod<[], [string], "view">;
-
-  receiveRandomness: TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
+  receiveSignature: TypedContractMethod<
+    [requestID: BigNumberish, signature: BytesLike],
     [void],
     "nonpayable"
   >;
@@ -100,12 +88,9 @@ export interface RandomnessReceiverBase extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "randomnessSender"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "receiveRandomness"
+    nameOrSignature: "receiveSignature"
   ): TypedContractMethod<
-    [requestID: BigNumberish, randomness: BytesLike],
+    [requestID: BigNumberish, signature: BytesLike],
     [void],
     "nonpayable"
   >;

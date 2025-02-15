@@ -7,18 +7,21 @@ import {
     Signer,
 } from "ethers"
 import {G2} from "mcl-wasm"
-import {RandomnessSender__factory} from "./generated"
+import {RandomnessSender__factory, SignatureSender__factory} from "./generated"
 import {
-    RandomnessCallbackFailedEvent,
     RandomnessCallbackSuccessEvent,
     RandomnessSender
 } from "./generated/RandomnessSender"
+import {
+    SignatureCallbackFailedEvent,
+    SignatureSender
+} from "./generated/SignatureSender"
 import {BlsBn254, bytesEqual} from "./bls-bn254"
 import {encodeParams, extractSingleLog} from "./ethers-helpers"
 import {withTimeout} from "./misc"
 import {TypedContractEvent, TypedListener} from "./generated/common"
 
-const defaultContractAddress = "0x9ed5a27a9f18529848d03ae699bdecc2ba8d10fe"
+const defaultRandomnessSenderContractAddress = "0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC"
 // the verifier's BLS public key arranged as magical bigints to avoid promises in creation
 export const VERIFIER_PUBLIC_KEY: [bigint, bigint, bigint, bigint] = [
     17445541620214498517833872661220947475697073327136585274784354247720096233162n,
@@ -40,16 +43,16 @@ export class Randomness {
     private bls: BlsBn254 | undefined
     private pk: G2 | undefined
 
-    constructor(private readonly rpc: Signer | Provider, private readonly contractAddress: string = defaultContractAddress) {
-        console.log(`created randomness-js client with address ${contractAddress}`)
-        this.contract = RandomnessSender__factory.connect(contractAddress, rpc)
+    constructor(private readonly rpc: Signer | Provider, private readonly randomnessSenderContractAddress: string = defaultRandomnessSenderContractAddress) {
+        console.log(`created randomness-js client with address ${randomnessSenderContractAddress}`)
+        this.contract = RandomnessSender__factory.connect(randomnessSenderContractAddress, rpc)
     }
 
     async requestRandomness(confirmations = 1, timeoutMs = 60000): Promise<RandomnessVerificationParameters> {
         if (this.rpc.provider == null) {
             throw Error("RPC requires a provider to request randomness")
         }
-
+    
         const receipt = await withTimeout(
             this.contract.requestRandomness().then(tx => tx.wait(confirmations)),
             timeoutMs
@@ -57,45 +60,62 @@ export class Randomness {
         if (!receipt) {
             throw Error("no receipt because confirmations were 0")
         }
-
-        const [requestID, nonce] = extractSingleLog(iface, receipt, this.contractAddress, iface.getEvent("RandomnessRequested"))
-
+    
+        const [requestID, nonce] = extractSingleLog(iface, receipt, this.randomnessSenderContractAddress, iface.getEvent("RandomnessRequested"))
+    
         return new Promise((resolve, reject) => {
-            // then we have to both check the past and listen to the future for emitted events
-            // lest we miss our fulfilled randomness. We set the listeners first... in case
-            // by some magic our request is fulfilled _between_ the lines
             const successFilter = this.contract.filters.RandomnessCallbackSuccess(requestID)
-            const failureFilter = this.contract.filters.RandomnessCallbackFailed(requestID)
-
-            // how many blocks we're willing to look back - don't really expect it to be more than 1
-            const blockLookBack = 3
-
-            // cleanup to do once we've managed all the events
+            const blockLookBack = 3 // How many blocks we're willing to look back
+    
             const cleanup = () => {
                 this.contract.off(successFilter)
-                this.contract.off(failureFilter)
             }
+    
             const randomnessCallback = (result: RandomnessVerificationParameters) => {
                 resolve(result)
                 cleanup()
             }
+    
             const randomnessListener = createRandomnessListener(nonce, randomnessCallback)
             this.contract.once(successFilter, randomnessListener)
-            this.contract.once(failureFilter, randomnessListener)
-
-            const randomnessFilter = createRandomnessLogListener(nonce, randomnessCallback)
+    
             this.contract.queryFilter(successFilter, -blockLookBack)
-                .then(randomnessFilter)
+                .then((logs) => {
+                    if (logs.length === 0) {
+                        console.log("No event found, attempting to fetch randomness request from contract...")
+                        this.fetchRandomnessRequest(requestID)
+                            .then(randomnessCallback)
+                            .catch(reject)
+                    } else {
+                        createRandomnessLogListener(nonce, randomnessCallback)(logs)
+                    }
+                })
                 .catch(reject)
-            this.contract.queryFilter(failureFilter, -blockLookBack)
-                .then(randomnessFilter)
-                .catch(reject)
-
+    
             setTimeout(() => {
                 cleanup()
                 reject(new Error("timed out requesting randomness"))
             }, timeoutMs)
         })
+    }
+
+    /**
+     * Fetch the details of a randomness request.
+     * This function should be called to fetch randomness requests.
+     * @param requestId randomness request id
+     * @returns details of the randomness request, undefined if not found
+     */
+    async fetchRandomnessRequest(requestId: bigint): Promise<RandomnessVerificationParameters> {
+        const signatureSender = SignatureSender__factory.connect(await this.contract.signatureSender(), this.rpc)
+        const {signature, isFulfilled} = await signatureSender.getRequest.staticCall(requestId)
+        const {nonce} = await this.contract.getRequest(requestId)
+
+        return {
+            requestID: requestId,
+            nonce,
+            randomness: isFulfilled? keccak256(signature) : "0x",
+            signature: isFulfilled? signature : "0x",
+        }
     }
 
     async verify(parameters: RandomnessVerificationParameters): Promise<boolean> {
@@ -122,14 +142,14 @@ export class Randomness {
 }
 
 function createRandomnessListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void): TypedListener<TypedContractEvent> {
-    return (log: RandomnessCallbackSuccessEvent.Log | RandomnessCallbackFailedEvent.Log) => {
+    return (log: RandomnessCallbackSuccessEvent.Log) => {
         const [requestID, randomness, signature] = log.args
         cb({requestID, nonce, randomness, signature})
     }
 }
 
 function createRandomnessLogListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void) {
-    return (logs: RandomnessCallbackSuccessEvent.Log[] | RandomnessCallbackFailedEvent.Log[]) => {
+    return (logs: RandomnessCallbackSuccessEvent.Log[]) => {
         if (logs.length === 0) {
             return
         }

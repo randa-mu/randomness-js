@@ -20,11 +20,20 @@ import type {
   TypedContractMethod,
 } from "./common";
 
-export interface RandomnessReceiverBaseInterface extends Interface {
+export interface MockRandomnessReceiverInterface extends Interface {
   getFunction(
-    nameOrSignature: "randomnessSender" | "receiveRandomness"
+    nameOrSignature:
+      | "randomness"
+      | "randomnessSender"
+      | "receiveRandomness"
+      | "requestId"
+      | "rollDice"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "randomness",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "randomnessSender",
     values?: undefined
@@ -33,7 +42,10 @@ export interface RandomnessReceiverBaseInterface extends Interface {
     functionFragment: "receiveRandomness",
     values: [BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "requestId", values?: undefined): string;
+  encodeFunctionData(functionFragment: "rollDice", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "randomness", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "randomnessSender",
     data: BytesLike
@@ -42,13 +54,15 @@ export interface RandomnessReceiverBaseInterface extends Interface {
     functionFragment: "receiveRandomness",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "requestId", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "rollDice", data: BytesLike): Result;
 }
 
-export interface RandomnessReceiverBase extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessReceiverBase;
+export interface MockRandomnessReceiver extends BaseContract {
+  connect(runner?: ContractRunner | null): MockRandomnessReceiver;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessReceiverBaseInterface;
+  interface: MockRandomnessReceiverInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -87,6 +101,8 @@ export interface RandomnessReceiverBase extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  randomness: TypedContractMethod<[], [string], "view">;
+
   randomnessSender: TypedContractMethod<[], [string], "view">;
 
   receiveRandomness: TypedContractMethod<
@@ -95,10 +111,17 @@ export interface RandomnessReceiverBase extends BaseContract {
     "nonpayable"
   >;
 
+  requestId: TypedContractMethod<[], [bigint], "view">;
+
+  rollDice: TypedContractMethod<[], [void], "nonpayable">;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
+  getFunction(
+    nameOrSignature: "randomness"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "randomnessSender"
   ): TypedContractMethod<[], [string], "view">;
@@ -109,6 +132,12 @@ export interface RandomnessReceiverBase extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "requestId"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "rollDice"
+  ): TypedContractMethod<[], [void], "nonpayable">;
 
   filters: {};
 }

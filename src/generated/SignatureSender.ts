@@ -24,44 +24,68 @@ import type {
 } from "./common";
 
 export declare namespace TypesLib {
-  export type RandomnessRequestStruct = {
-    nonce: BigNumberish;
+  export type SignatureRequestStruct = {
+    message: BytesLike;
+    messageHash: BytesLike;
+    condition: BytesLike;
+    schemeID: string;
     callback: AddressLike;
+    signature: BytesLike;
+    isFulfilled: boolean;
   };
 
-  export type RandomnessRequestStructOutput = [
-    nonce: bigint,
-    callback: string
-  ] & { nonce: bigint; callback: string };
+  export type SignatureRequestStructOutput = [
+    message: string,
+    messageHash: string,
+    condition: string,
+    schemeID: string,
+    callback: string,
+    signature: string,
+    isFulfilled: boolean
+  ] & {
+    message: string;
+    messageHash: string;
+    condition: string;
+    schemeID: string;
+    callback: string;
+    signature: string;
+    isFulfilled: boolean;
+  };
 }
 
-export interface RandomnessSenderInterface extends Interface {
+export interface SignatureSenderInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "ADMIN_ROLE"
       | "DEFAULT_ADMIN_ROLE"
-      | "DST"
-      | "SCHEME_ID"
       | "UPGRADE_INTERFACE_VERSION"
-      | "getAllRequests"
+      | "fulfilSignatureRequest"
+      | "getAllErroredRequestIds"
+      | "getAllFulfilledRequestIds"
+      | "getAllUnfulfilledRequestIds"
+      | "getCountOfUnfulfilledRequestIds"
+      | "getPublicKey"
+      | "getPublicKeyBytes"
       | "getRequest"
       | "getRoleAdmin"
       | "getRoleMember"
       | "getRoleMemberCount"
       | "getRoleMembers"
       | "grantRole"
+      | "hasErrored"
       | "hasRole"
       | "initialize"
       | "isInFlight"
-      | "messageFrom"
-      | "nonce"
+      | "lastRequestID"
+      | "multicall"
       | "proxiableUUID"
-      | "receiveSignature"
       | "renounceRole"
-      | "requestRandomness"
+      | "requestSignature"
+      | "requests"
+      | "retryCallback"
       | "revokeRole"
-      | "setSignatureSender"
-      | "signatureSender"
+      | "setSignatureSchemeAddressProvider"
+      | "signatureSchemeAddressProvider"
       | "supportsInterface"
       | "upgradeToAndCall"
       | "version"
@@ -70,12 +94,13 @@ export interface RandomnessSenderInterface extends Interface {
   getEvent(
     nameOrSignatureOrTopic:
       | "Initialized"
-      | "RandomnessCallbackSuccess"
-      | "RandomnessRequested"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
-      | "SignatureSenderUpdated"
+      | "SignatureCallbackFailed"
+      | "SignatureRequestFulfilled"
+      | "SignatureRequested"
+      | "SignatureSchemeAddressProviderUpdated"
       | "Upgraded"
   ): EventFragment;
 
@@ -87,14 +112,36 @@ export interface RandomnessSenderInterface extends Interface {
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "DST", values?: undefined): string;
-  encodeFunctionData(functionFragment: "SCHEME_ID", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "UPGRADE_INTERFACE_VERSION",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getAllRequests",
+    functionFragment: "fulfilSignatureRequest",
+    values: [BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllErroredRequestIds",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllFulfilledRequestIds",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllUnfulfilledRequestIds",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCountOfUnfulfilledRequestIds",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPublicKey",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPublicKeyBytes",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -122,48 +169,64 @@ export interface RandomnessSenderInterface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "hasErrored",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "hasRole",
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [AddressLike, AddressLike]
+    values: [
+      [BigNumberish, BigNumberish],
+      [BigNumberish, BigNumberish],
+      AddressLike,
+      AddressLike
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "isInFlight",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "messageFrom",
-    values: [TypesLib.RandomnessRequestStruct]
-  ): string;
-  encodeFunctionData(functionFragment: "nonce", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "proxiableUUID",
+    functionFragment: "lastRequestID",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "receiveSignature",
-    values: [BigNumberish, BytesLike]
+    functionFragment: "multicall",
+    values: [BytesLike[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "requestRandomness",
-    values?: undefined
+    functionFragment: "requestSignature",
+    values: [string, BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requests",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "retryCallback",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setSignatureSender",
+    functionFragment: "setSignatureSchemeAddressProvider",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "signatureSender",
+    functionFragment: "signatureSchemeAddressProvider",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -181,14 +244,36 @@ export interface RandomnessSenderInterface extends Interface {
     functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "DST", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "SCHEME_ID", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "UPGRADE_INTERFACE_VERSION",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getAllRequests",
+    functionFragment: "fulfilSignatureRequest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllErroredRequestIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllFulfilledRequestIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllUnfulfilledRequestIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCountOfUnfulfilledRequestIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPublicKey",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPublicKeyBytes",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getRequest", data: BytesLike): Result;
@@ -209,20 +294,17 @@ export interface RandomnessSenderInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hasErrored", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isInFlight", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "messageFrom",
+    functionFragment: "lastRequestID",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "nonce", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "multicall", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proxiableUUID",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "receiveSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -230,16 +312,21 @@ export interface RandomnessSenderInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "requestRandomness",
+    functionFragment: "requestSignature",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "requests", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "retryCallback",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setSignatureSender",
+    functionFragment: "setSignatureSchemeAddressProvider",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "signatureSender",
+    functionFragment: "signatureSchemeAddressProvider",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -258,53 +345,6 @@ export namespace InitializedEvent {
   export type OutputTuple = [version: bigint];
   export interface OutputObject {
     version: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RandomnessCallbackSuccessEvent {
-  export type InputTuple = [
-    requestID: BigNumberish,
-    randomness: BytesLike,
-    signature: BytesLike
-  ];
-  export type OutputTuple = [
-    requestID: bigint,
-    randomness: string,
-    signature: string
-  ];
-  export interface OutputObject {
-    requestID: bigint;
-    randomness: string;
-    signature: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RandomnessRequestedEvent {
-  export type InputTuple = [
-    requestID: BigNumberish,
-    nonce: BigNumberish,
-    requester: AddressLike,
-    requestedAt: BigNumberish
-  ];
-  export type OutputTuple = [
-    requestID: bigint,
-    nonce: bigint,
-    requester: string,
-    requestedAt: bigint
-  ];
-  export interface OutputObject {
-    requestID: bigint;
-    nonce: bigint;
-    requester: string;
-    requestedAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -370,11 +410,70 @@ export namespace RoleRevokedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace SignatureSenderUpdatedEvent {
-  export type InputTuple = [signatureSender: AddressLike];
-  export type OutputTuple = [signatureSender: string];
+export namespace SignatureCallbackFailedEvent {
+  export type InputTuple = [requestID: BigNumberish];
+  export type OutputTuple = [requestID: bigint];
   export interface OutputObject {
-    signatureSender: string;
+    requestID: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace SignatureRequestFulfilledEvent {
+  export type InputTuple = [requestID: BigNumberish, signature: BytesLike];
+  export type OutputTuple = [requestID: bigint, signature: string];
+  export interface OutputObject {
+    requestID: bigint;
+    signature: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace SignatureRequestedEvent {
+  export type InputTuple = [
+    requestID: BigNumberish,
+    callback: AddressLike,
+    schemeID: string,
+    message: BytesLike,
+    messageHashToSign: BytesLike,
+    condition: BytesLike,
+    requestedAt: BigNumberish
+  ];
+  export type OutputTuple = [
+    requestID: bigint,
+    callback: string,
+    schemeID: string,
+    message: string,
+    messageHashToSign: string,
+    condition: string,
+    requestedAt: bigint
+  ];
+  export interface OutputObject {
+    requestID: bigint;
+    callback: string;
+    schemeID: string;
+    message: string;
+    messageHashToSign: string;
+    condition: string;
+    requestedAt: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace SignatureSchemeAddressProviderUpdatedEvent {
+  export type InputTuple = [newSignatureSchemeAddressProvider: AddressLike];
+  export type OutputTuple = [newSignatureSchemeAddressProvider: string];
+  export interface OutputObject {
+    newSignatureSchemeAddressProvider: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -394,11 +493,11 @@ export namespace UpgradedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface RandomnessSender extends BaseContract {
-  connect(runner?: ContractRunner | null): RandomnessSender;
+export interface SignatureSender extends BaseContract {
+  connect(runner?: ContractRunner | null): SignatureSender;
   waitForDeployment(): Promise<this>;
 
-  interface: RandomnessSenderInterface;
+  interface: SignatureSenderInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -441,21 +540,33 @@ export interface RandomnessSender extends BaseContract {
 
   DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
 
-  DST: TypedContractMethod<[], [string], "view">;
-
-  SCHEME_ID: TypedContractMethod<[], [string], "view">;
-
   UPGRADE_INTERFACE_VERSION: TypedContractMethod<[], [string], "view">;
 
-  getAllRequests: TypedContractMethod<
+  fulfilSignatureRequest: TypedContractMethod<
+    [requestID: BigNumberish, signature: BytesLike],
+    [void],
+    "nonpayable"
+  >;
+
+  getAllErroredRequestIds: TypedContractMethod<[], [bigint[]], "view">;
+
+  getAllFulfilledRequestIds: TypedContractMethod<[], [bigint[]], "view">;
+
+  getAllUnfulfilledRequestIds: TypedContractMethod<[], [bigint[]], "view">;
+
+  getCountOfUnfulfilledRequestIds: TypedContractMethod<[], [bigint], "view">;
+
+  getPublicKey: TypedContractMethod<
     [],
-    [TypesLib.RandomnessRequestStructOutput[]],
+    [[[bigint, bigint], [bigint, bigint]]],
     "view"
   >;
 
+  getPublicKeyBytes: TypedContractMethod<[], [string], "view">;
+
   getRequest: TypedContractMethod<
-    [requestId: BigNumberish],
-    [TypesLib.RandomnessRequestStructOutput],
+    [requestID: BigNumberish],
+    [TypesLib.SignatureRequestStructOutput],
     "view"
   >;
 
@@ -477,6 +588,8 @@ export interface RandomnessSender extends BaseContract {
     "nonpayable"
   >;
 
+  hasErrored: TypedContractMethod<[requestID: BigNumberish], [boolean], "view">;
+
   hasRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
     [boolean],
@@ -484,28 +597,23 @@ export interface RandomnessSender extends BaseContract {
   >;
 
   initialize: TypedContractMethod<
-    [_signatureSender: AddressLike, owner: AddressLike],
+    [
+      x: [BigNumberish, BigNumberish],
+      y: [BigNumberish, BigNumberish],
+      owner: AddressLike,
+      _signatureSchemeAddressProvider: AddressLike
+    ],
     [void],
     "nonpayable"
   >;
 
   isInFlight: TypedContractMethod<[requestID: BigNumberish], [boolean], "view">;
 
-  messageFrom: TypedContractMethod<
-    [r: TypesLib.RandomnessRequestStruct],
-    [string],
-    "view"
-  >;
+  lastRequestID: TypedContractMethod<[], [bigint], "view">;
 
-  nonce: TypedContractMethod<[], [bigint], "view">;
+  multicall: TypedContractMethod<[data: BytesLike[]], [string[]], "nonpayable">;
 
   proxiableUUID: TypedContractMethod<[], [string], "view">;
-
-  receiveSignature: TypedContractMethod<
-    [requestID: BigNumberish, signature: BytesLike],
-    [void],
-    "nonpayable"
-  >;
 
   renounceRole: TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
@@ -513,7 +621,33 @@ export interface RandomnessSender extends BaseContract {
     "nonpayable"
   >;
 
-  requestRandomness: TypedContractMethod<[], [bigint], "nonpayable">;
+  requestSignature: TypedContractMethod<
+    [schemeID: string, message: BytesLike, condition: BytesLike],
+    [bigint],
+    "nonpayable"
+  >;
+
+  requests: TypedContractMethod<
+    [arg0: BigNumberish],
+    [
+      [string, string, string, string, string, string, boolean] & {
+        message: string;
+        messageHash: string;
+        condition: string;
+        schemeID: string;
+        callback: string;
+        signature: string;
+        isFulfilled: boolean;
+      }
+    ],
+    "view"
+  >;
+
+  retryCallback: TypedContractMethod<
+    [requestID: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
   revokeRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -521,13 +655,13 @@ export interface RandomnessSender extends BaseContract {
     "nonpayable"
   >;
 
-  setSignatureSender: TypedContractMethod<
-    [newSignatureSender: AddressLike],
+  setSignatureSchemeAddressProvider: TypedContractMethod<
+    [newSignatureSchemeAddressProvider: AddressLike],
     [void],
     "nonpayable"
   >;
 
-  signatureSender: TypedContractMethod<[], [string], "view">;
+  signatureSchemeAddressProvider: TypedContractMethod<[], [string], "view">;
 
   supportsInterface: TypedContractMethod<
     [interfaceId: BytesLike],
@@ -554,26 +688,38 @@ export interface RandomnessSender extends BaseContract {
     nameOrSignature: "DEFAULT_ADMIN_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "DST"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "SCHEME_ID"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "UPGRADE_INTERFACE_VERSION"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "getAllRequests"
+    nameOrSignature: "fulfilSignatureRequest"
   ): TypedContractMethod<
-    [],
-    [TypesLib.RandomnessRequestStructOutput[]],
-    "view"
+    [requestID: BigNumberish, signature: BytesLike],
+    [void],
+    "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "getAllErroredRequestIds"
+  ): TypedContractMethod<[], [bigint[]], "view">;
+  getFunction(
+    nameOrSignature: "getAllFulfilledRequestIds"
+  ): TypedContractMethod<[], [bigint[]], "view">;
+  getFunction(
+    nameOrSignature: "getAllUnfulfilledRequestIds"
+  ): TypedContractMethod<[], [bigint[]], "view">;
+  getFunction(
+    nameOrSignature: "getCountOfUnfulfilledRequestIds"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getPublicKey"
+  ): TypedContractMethod<[], [[[bigint, bigint], [bigint, bigint]]], "view">;
+  getFunction(
+    nameOrSignature: "getPublicKeyBytes"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "getRequest"
   ): TypedContractMethod<
-    [requestId: BigNumberish],
-    [TypesLib.RandomnessRequestStructOutput],
+    [requestID: BigNumberish],
+    [TypesLib.SignatureRequestStructOutput],
     "view"
   >;
   getFunction(
@@ -600,6 +746,9 @@ export interface RandomnessSender extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "hasErrored"
+  ): TypedContractMethod<[requestID: BigNumberish], [boolean], "view">;
+  getFunction(
     nameOrSignature: "hasRole"
   ): TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -609,7 +758,12 @@ export interface RandomnessSender extends BaseContract {
   getFunction(
     nameOrSignature: "initialize"
   ): TypedContractMethod<
-    [_signatureSender: AddressLike, owner: AddressLike],
+    [
+      x: [BigNumberish, BigNumberish],
+      y: [BigNumberish, BigNumberish],
+      owner: AddressLike,
+      _signatureSchemeAddressProvider: AddressLike
+    ],
     [void],
     "nonpayable"
   >;
@@ -617,25 +771,14 @@ export interface RandomnessSender extends BaseContract {
     nameOrSignature: "isInFlight"
   ): TypedContractMethod<[requestID: BigNumberish], [boolean], "view">;
   getFunction(
-    nameOrSignature: "messageFrom"
-  ): TypedContractMethod<
-    [r: TypesLib.RandomnessRequestStruct],
-    [string],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "nonce"
+    nameOrSignature: "lastRequestID"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "multicall"
+  ): TypedContractMethod<[data: BytesLike[]], [string[]], "nonpayable">;
   getFunction(
     nameOrSignature: "proxiableUUID"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "receiveSignature"
-  ): TypedContractMethod<
-    [requestID: BigNumberish, signature: BytesLike],
-    [void],
-    "nonpayable"
-  >;
   getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
@@ -644,8 +787,32 @@ export interface RandomnessSender extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "requestRandomness"
-  ): TypedContractMethod<[], [bigint], "nonpayable">;
+    nameOrSignature: "requestSignature"
+  ): TypedContractMethod<
+    [schemeID: string, message: BytesLike, condition: BytesLike],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "requests"
+  ): TypedContractMethod<
+    [arg0: BigNumberish],
+    [
+      [string, string, string, string, string, string, boolean] & {
+        message: string;
+        messageHash: string;
+        condition: string;
+        schemeID: string;
+        callback: string;
+        signature: string;
+        isFulfilled: boolean;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "retryCallback"
+  ): TypedContractMethod<[requestID: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "revokeRole"
   ): TypedContractMethod<
@@ -654,14 +821,14 @@ export interface RandomnessSender extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "setSignatureSender"
+    nameOrSignature: "setSignatureSchemeAddressProvider"
   ): TypedContractMethod<
-    [newSignatureSender: AddressLike],
+    [newSignatureSchemeAddressProvider: AddressLike],
     [void],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "signatureSender"
+    nameOrSignature: "signatureSchemeAddressProvider"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "supportsInterface"
@@ -685,20 +852,6 @@ export interface RandomnessSender extends BaseContract {
     InitializedEvent.OutputObject
   >;
   getEvent(
-    key: "RandomnessCallbackSuccess"
-  ): TypedContractEvent<
-    RandomnessCallbackSuccessEvent.InputTuple,
-    RandomnessCallbackSuccessEvent.OutputTuple,
-    RandomnessCallbackSuccessEvent.OutputObject
-  >;
-  getEvent(
-    key: "RandomnessRequested"
-  ): TypedContractEvent<
-    RandomnessRequestedEvent.InputTuple,
-    RandomnessRequestedEvent.OutputTuple,
-    RandomnessRequestedEvent.OutputObject
-  >;
-  getEvent(
     key: "RoleAdminChanged"
   ): TypedContractEvent<
     RoleAdminChangedEvent.InputTuple,
@@ -720,11 +873,32 @@ export interface RandomnessSender extends BaseContract {
     RoleRevokedEvent.OutputObject
   >;
   getEvent(
-    key: "SignatureSenderUpdated"
+    key: "SignatureCallbackFailed"
   ): TypedContractEvent<
-    SignatureSenderUpdatedEvent.InputTuple,
-    SignatureSenderUpdatedEvent.OutputTuple,
-    SignatureSenderUpdatedEvent.OutputObject
+    SignatureCallbackFailedEvent.InputTuple,
+    SignatureCallbackFailedEvent.OutputTuple,
+    SignatureCallbackFailedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SignatureRequestFulfilled"
+  ): TypedContractEvent<
+    SignatureRequestFulfilledEvent.InputTuple,
+    SignatureRequestFulfilledEvent.OutputTuple,
+    SignatureRequestFulfilledEvent.OutputObject
+  >;
+  getEvent(
+    key: "SignatureRequested"
+  ): TypedContractEvent<
+    SignatureRequestedEvent.InputTuple,
+    SignatureRequestedEvent.OutputTuple,
+    SignatureRequestedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SignatureSchemeAddressProviderUpdated"
+  ): TypedContractEvent<
+    SignatureSchemeAddressProviderUpdatedEvent.InputTuple,
+    SignatureSchemeAddressProviderUpdatedEvent.OutputTuple,
+    SignatureSchemeAddressProviderUpdatedEvent.OutputObject
   >;
   getEvent(
     key: "Upgraded"
@@ -744,28 +918,6 @@ export interface RandomnessSender extends BaseContract {
       InitializedEvent.InputTuple,
       InitializedEvent.OutputTuple,
       InitializedEvent.OutputObject
-    >;
-
-    "RandomnessCallbackSuccess(uint256,bytes32,bytes)": TypedContractEvent<
-      RandomnessCallbackSuccessEvent.InputTuple,
-      RandomnessCallbackSuccessEvent.OutputTuple,
-      RandomnessCallbackSuccessEvent.OutputObject
-    >;
-    RandomnessCallbackSuccess: TypedContractEvent<
-      RandomnessCallbackSuccessEvent.InputTuple,
-      RandomnessCallbackSuccessEvent.OutputTuple,
-      RandomnessCallbackSuccessEvent.OutputObject
-    >;
-
-    "RandomnessRequested(uint256,uint256,address,uint256)": TypedContractEvent<
-      RandomnessRequestedEvent.InputTuple,
-      RandomnessRequestedEvent.OutputTuple,
-      RandomnessRequestedEvent.OutputObject
-    >;
-    RandomnessRequested: TypedContractEvent<
-      RandomnessRequestedEvent.InputTuple,
-      RandomnessRequestedEvent.OutputTuple,
-      RandomnessRequestedEvent.OutputObject
     >;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
@@ -801,15 +953,48 @@ export interface RandomnessSender extends BaseContract {
       RoleRevokedEvent.OutputObject
     >;
 
-    "SignatureSenderUpdated(address)": TypedContractEvent<
-      SignatureSenderUpdatedEvent.InputTuple,
-      SignatureSenderUpdatedEvent.OutputTuple,
-      SignatureSenderUpdatedEvent.OutputObject
+    "SignatureCallbackFailed(uint256)": TypedContractEvent<
+      SignatureCallbackFailedEvent.InputTuple,
+      SignatureCallbackFailedEvent.OutputTuple,
+      SignatureCallbackFailedEvent.OutputObject
     >;
-    SignatureSenderUpdated: TypedContractEvent<
-      SignatureSenderUpdatedEvent.InputTuple,
-      SignatureSenderUpdatedEvent.OutputTuple,
-      SignatureSenderUpdatedEvent.OutputObject
+    SignatureCallbackFailed: TypedContractEvent<
+      SignatureCallbackFailedEvent.InputTuple,
+      SignatureCallbackFailedEvent.OutputTuple,
+      SignatureCallbackFailedEvent.OutputObject
+    >;
+
+    "SignatureRequestFulfilled(uint256,bytes)": TypedContractEvent<
+      SignatureRequestFulfilledEvent.InputTuple,
+      SignatureRequestFulfilledEvent.OutputTuple,
+      SignatureRequestFulfilledEvent.OutputObject
+    >;
+    SignatureRequestFulfilled: TypedContractEvent<
+      SignatureRequestFulfilledEvent.InputTuple,
+      SignatureRequestFulfilledEvent.OutputTuple,
+      SignatureRequestFulfilledEvent.OutputObject
+    >;
+
+    "SignatureRequested(uint256,address,string,bytes,bytes,bytes,uint256)": TypedContractEvent<
+      SignatureRequestedEvent.InputTuple,
+      SignatureRequestedEvent.OutputTuple,
+      SignatureRequestedEvent.OutputObject
+    >;
+    SignatureRequested: TypedContractEvent<
+      SignatureRequestedEvent.InputTuple,
+      SignatureRequestedEvent.OutputTuple,
+      SignatureRequestedEvent.OutputObject
+    >;
+
+    "SignatureSchemeAddressProviderUpdated(address)": TypedContractEvent<
+      SignatureSchemeAddressProviderUpdatedEvent.InputTuple,
+      SignatureSchemeAddressProviderUpdatedEvent.OutputTuple,
+      SignatureSchemeAddressProviderUpdatedEvent.OutputObject
+    >;
+    SignatureSchemeAddressProviderUpdated: TypedContractEvent<
+      SignatureSchemeAddressProviderUpdatedEvent.InputTuple,
+      SignatureSchemeAddressProviderUpdatedEvent.OutputTuple,
+      SignatureSchemeAddressProviderUpdatedEvent.OutputObject
     >;
 
     "Upgraded(address)": TypedContractEvent<
