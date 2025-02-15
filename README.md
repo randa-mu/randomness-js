@@ -4,4 +4,5 @@ A convenience library for retrieving, verifying and deriving randomness from the
 
 Build everything by running `npm run build`. This creates an `index.js` and `index.d.ts` at the root directory.
 
-Solidity interfaces for randomenss can be found in the [contracts](./contracts) directory.
+Solidity interfaces for randomenss can be found in the [randomness-solidity](./randomness-solidity) directory.
+
