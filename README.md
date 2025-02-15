@@ -80,3 +80,11 @@ main().catch((error) => {
 For more RandomnessJS examples, please see the [unit tests](./test/randomness.test.ts).
 
 For on-chain integration with our smart contract interfaces, e.g., to use the randomness in on-chain games, lotteries and other dApps, please see the [Solidity documentation](https://github.com/randa-mu/randomness-solidity/blob/feat/randomness/README.md). 
+
+### Licensing
+
+This library is licensed under the MIT License which can be accessed [here](LICENSE).
+
+### Contributing
+
+Contributions are welcome! If you find a bug, have a feature request, or want to improve the code, feel free to open an issue or submit a pull request.
