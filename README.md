@@ -71,4 +71,12 @@ main().catch((error) => {
 });
 ```
 
-For more examples, please see the [unit tests](./test/randomness.test.ts).
+#### How It Works
+1. On-chain randomness request: an on-chain randomness request transaction is sent to the Randomness Solidity library.
+
+2. Signature from off-chain oracle: an off-chain oracle listens for randomness request events and collects a threshold signature from the dcrypt network on the unique request data and nonce and sends this signature back on-chain in a callback. The signature is verified on-chain and if valid, a call is made with the signature to the callback address that made the request.
+
+
+For more RandomnessJS examples, please see the [unit tests](./test/randomness.test.ts).
+
+For on-chain integration with our smart contract interfaces, e.g., to use the randomness in on-chain games, lotteries and other dApps, please see the [Solidity documentation](https://github.com/randa-mu/randomness-solidity/blob/feat/randomness/README.md). 
