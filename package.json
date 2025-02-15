@@ -5,9 +5,10 @@
   "types": "index.d.ts",
   "main": "index.js",
   "scripts": {
-    "build": "npm run clean && npm run build:js && npm run build:types",
+    "build": "npm run clean && npm run build:generate && npm run build:js && npm run build:types",
     "build:js": "esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=index.js",
     "build:types": "tsc --emitDeclarationOnly",
+    "build:generate": "cd randomness-solidity && forge build && cd .. && mkdir -p src/generated && npx typechain --target ethers-v6 --out-dir src/generated './randomness-solidity/out/*.sol/*.json'",
     "clean": "rm -rf index.js index.d.ts",
     "lint": "eslint src",
     "lint:fix": "eslint --fix",
@@ -28,9 +29,11 @@
   },
   "homepage": "https://github.com/randa-mu/randomness-js#readme",
   "dependencies": {
+    "@typechain/ethers-v6": "^0.5.1",
     "buffer": "^6.0.3",
     "ethers": "^6.13.4",
-    "mcl-wasm": "^1.7.0"
+    "mcl-wasm": "^1.7.0",
+    "typechain": "^8.3.2"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
