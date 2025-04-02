@@ -1,9 +1,15 @@
 {
-  "name": "@randamu/randomness-js",
+  "name": "randomness-js",
   "version": "0.0.1",
-  "description": "A library for consuming, verifying and using randomness from the dcrypt network",
+  "description": "A library for consuming, verifying and using randomness from the dcipher network",
   "types": "index.d.ts",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "npm run clean && npm run build:js && npm run build:types",
     "build:js": "esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=index.js",
