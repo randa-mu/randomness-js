@@ -1,19 +1,16 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "esnext",
+    "module": "esnext",
+    "target": "es2020",
+    "moduleResolution": "bundler",
     "sourceMap": true,
     "declaration": true,
-    "outFile": "index.d.ts",
-    "moduleResolution": "node",
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
     "allowJs": true,
     "esModuleInterop": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "esnext",
-      "scripthost"
-    ],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -28,4 +25,3 @@
   "exclude": ["src/generated/**/*"],
   "compileOnSave": true
 }
-

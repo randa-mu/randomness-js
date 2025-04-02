@@ -4,6 +4,7 @@ out/
 node_modules
 index.js
 *.d.ts
+dist
 
 # Ignores development broadcast logs
 !/broadcast

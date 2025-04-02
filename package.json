@@ -1,20 +1,35 @@
 {
   "name": "randomness-js",
-  "version": "0.0.1-rc1",
+  "version": "0.0.1-rc2",
   "description": "A library for consuming, verifying and using randomness from the dcipher network",
-  "types": "index.d.ts",
-  "main": "index.js",
+  "source": "src/index.ts",
+  "main": "./build/cjs/index.js",
+  "module": "./build/esm/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./build/index.d.ts",
+        "default": "./build/cjs/index.js"
+      },
+      "import": {
+        "types": "./build/index.d.ts",
+        "default": "./build/esm/index.js"
+      }
+    }
+  },
   "files": [
-    "index.js",
-    "index.d.ts",
+    "dist",
+    "src",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:js && npm run build:types",
-    "build:js": "esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=index.js",
-    "build:types": "tsc --emitDeclarationOnly",
-    "clean": "rm -rf index.js index.d.ts",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:esm": "esbuild src/index.ts --bundle --platform=browser --format=esm --outdir=dist/esm --sourcemap --target=es2020 --out-extension:.js=.mjs",
+    "build:cjs": "esbuild src/index.ts --bundle --platform=node --format=cjs --outdir=dist/cjs --sourcemap --target=es2020 --out-extension:.js=.cjs",
+    "build:types": "tsc",
+    "clean": "rm -rf dist",
     "lint": "eslint src",
     "lint:fix": "eslint --fix",
     "test": "jest ./test/*.test.ts"
