@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv"
-import {describe, it, expect, beforeAll} from "@jest/globals"
+import {describe, it, expect, beforeAll, afterAll} from "@jest/globals"
 import {NonceManager, Wallet, WebSocketProvider} from "ethers"
 import {FILECOIN_CALIBNET_CONTRACT_ADDRESS, Randomness} from "../src"
 
@@ -9,6 +9,7 @@ describe("randomness", () => {
     beforeAll(() => {
         dotenv.config()
     })
+
     it("can be requested from a testnet and verified", async () => {
         const rpc = new WebSocketProvider(process.env.NETWORK_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.NETWORK_PRIVATE_KEY || "", rpc))
@@ -17,6 +18,7 @@ describe("randomness", () => {
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         await randomness.verify(response)
+        await rpc.destroy()
     }, TEST_TIMEOUT)
 
 })

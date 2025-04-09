@@ -73,10 +73,13 @@ export class Randomness {
 
             // how many blocks we're willing to look back - don't really expect it to be more than 1
             const blockLookBack = 3
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let timeout: any = null
 
             // cleanup to do once we've managed all the events
             const cleanup = () => {
                 this.contract.off(successFilter)
+                clearTimeout(timeout)
             }
             const randomnessCallback = (result: RandomnessVerificationParameters) => {
                 resolve(result)
@@ -90,7 +93,7 @@ export class Randomness {
                 .then(randomnessFilter)
                 .catch(reject)
 
-            setTimeout(() => {
+            timeout = setTimeout(() => {
                 cleanup()
                 reject(new Error("timed out requesting randomness"))
             }, timeoutMs)
