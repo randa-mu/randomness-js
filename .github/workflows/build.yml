@@ -19,11 +19,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Test
-        run: npm run test
-
       - name: Build
         run: npm run build
+
+      - name: Test
+        run: npm run test
 
       - name: Publish to npmjs
         uses: JS-DevTools/npm-publish@v1
