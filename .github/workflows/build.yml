@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ["randamu-self-hosted-default"]
     steps:
       - name: Checkout 🛎️
         uses: "actions/checkout@v4"
