@@ -1,6 +1,6 @@
 {
   "name": "randomness-js",
-  "version": "0.0.1-rc5",
+  "version": "0.0.1-rc6",
   "description": "A library for consuming, verifying and using randomness from the dcipher network",
   "source": "src/index.ts",
   "main": "./dist/cjs/index.cjs",
@@ -25,7 +25,9 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build": "npm run clean && npm run build:solidity && npm run build:generate && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:solidity": "(cd ./randomness-solidity && forge build && cd ..)",
+    "build:generate": "mkdir -p src/generated && npx typechain --target ethers-v6 --out-dir src/generated './randomness-solidity/out/*.sol/*.json'",
     "build:esm": "esbuild src/index.ts --bundle --platform=browser --format=esm --outdir=dist/esm --sourcemap --target=es2020 --out-extension:.js=.mjs",
     "build:cjs": "esbuild src/index.ts --bundle --platform=node --format=cjs --outdir=dist/cjs --sourcemap --target=es2020 --out-extension:.js=.cjs",
     "build:types": "tsc",
@@ -49,18 +51,23 @@
   },
   "homepage": "https://github.com/randa-mu/randomness-js#readme",
   "dependencies": {
+    "@kevincharm/noble-bn254-drand": "^0.0.1",
+    "@noble/curves": "^1.8.1",
     "buffer": "^6.0.3",
-    "ethers": "^6.13.4",
-    "mcl-wasm": "^1.7.0"
+    "ethers": "^6.13.4"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@types/dotenv": "^6.1.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.7.5",
+    "dotenv": "^16.4.7",
     "esbuild": "^0.24.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0"
   },
