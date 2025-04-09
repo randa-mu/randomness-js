@@ -1,3 +1,7 @@
+# project files
+.env
+src/generated
+
 # Compiler files
 cache/
 out/
