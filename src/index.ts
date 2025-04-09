@@ -1,4 +1,5 @@
 import {
+    BigNumberish,
     BytesLike,
     getBytes,
     keccak256,
@@ -48,6 +49,21 @@ export class Randomness {
 
     static createFurnace(rpc: Signer | Provider): Randomness {
         return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS)
+    }
+
+    static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
+        switch (chainId) {
+            case "314159":
+            case 314159n:
+            case 314159:
+                return Randomness.createFilecoinCalibnet(rpc)
+            case "64630":
+            case 64630n:
+            case 64630:
+                return Randomness.createFurnace(rpc)
+            default:
+                throw new Error("unsupported chainId :(")
+        }
     }
 
     async requestRandomness(confirmations = 1, timeoutMs = 60000): Promise<RandomnessVerificationParameters> {

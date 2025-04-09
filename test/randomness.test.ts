@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv"
-import {describe, it, expect, beforeAll, afterAll} from "@jest/globals"
+import {describe, it, expect, beforeAll} from "@jest/globals"
 import {NonceManager, Wallet, WebSocketProvider} from "ethers"
 import {FILECOIN_CALIBNET_CONTRACT_ADDRESS, Randomness} from "../src"
 
