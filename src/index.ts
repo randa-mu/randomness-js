@@ -17,8 +17,8 @@ import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/Rand
 /* addresses of the deployed contracts */
 export const FURNACE_TESTNET_CONTRACT_ADDRESS = "0x8192aF4ce49f473fCa7e3e5a8d819B0763Def048"
 export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC"
-export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x31e01BCA94b787D3B4a16C378Bd5D200686dEb99"
-export const POLYGON_POS_CONTRACT_ADDRESS = "0x31e01BCA94b787D3B4a16C378Bd5D200686dEb99"
+export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x615bf9f39bA234b0A3a5C10e0035506F66C59F46"
+export const POLYGON_POS_CONTRACT_ADDRESS = "0x615bf9f39bA234b0A3a5C10e0035506F66C59F46"
 
 /* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
 const RANDOMNESS_DST = "randomness:0.0.1:bn254"
