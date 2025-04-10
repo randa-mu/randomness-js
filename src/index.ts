@@ -52,16 +52,27 @@ export class Randomness {
         return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS)
     }
 
+    static createBaseSepolia(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS)
+    }
+
     static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
-        switch (chainId) {
+        switch (chainId.toString().toLowerCase()) {
             case "314159":
-            case 314159n:
-            case 314159:
+            case "314159n":
+            case "0x4cb2f":
                 return Randomness.createFilecoinCalibnet(rpc)
+
             case "64630":
-            case 64630n:
-            case 64630:
+            case "64630n":
+            case "0xfc76":
                 return Randomness.createFurnace(rpc)
+
+            case "84532":
+            case "84532n":
+            case "0x14a34":
+                return Randomness.createBaseSepolia(rpc)
+
             default:
                 throw new Error("unsupported chainId :(")
         }
