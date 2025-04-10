@@ -9,6 +9,8 @@ env:
   FILECOIN_RPC_URL: ${{ secrets.FILECOIN_RPC_URL }}
   FURNACE_PRIVATE_KEY: ${{ secrets.FURNACE_PRIVATE_KEY }}
   FURNACE_RPC_URL: ${{ secrets.FURNACE_RPC_URL }}
+  BASE_PRIVATE_KEY: ${{ secrets.BASE_PRIVATE_KEY }}
+  BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
 
 jobs:
   build:
