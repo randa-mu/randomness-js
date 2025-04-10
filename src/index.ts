@@ -17,6 +17,7 @@ import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/Rand
 /* addresses of the deployed contracts */
 export const FURNACE_TESTNET_CONTRACT_ADDRESS = "0x8192aF4ce49f473fCa7e3e5a8d819B0763Def048"
 export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC"
+export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x31e01BCA94b787D3B4a16C378Bd5D200686dEb99"
 
 /* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
 const RANDOMNESS_DST = "randomness:0.0.1:bn254"
@@ -51,16 +52,27 @@ export class Randomness {
         return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS)
     }
 
+    static createBaseSepolia(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS)
+    }
+
     static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
-        switch (chainId) {
+        switch (chainId.toString().toLowerCase()) {
             case "314159":
-            case 314159n:
-            case 314159:
+            case "314159n":
+            case "0x4cb2f":
                 return Randomness.createFilecoinCalibnet(rpc)
+
             case "64630":
-            case 64630n:
-            case 64630:
+            case "64630n":
+            case "0xfc76":
                 return Randomness.createFurnace(rpc)
+
+            case "84532":
+            case "84532n":
+            case "0x14a34":
+                return Randomness.createBaseSepolia(rpc)
+
             default:
                 throw new Error("unsupported chainId :(")
         }
