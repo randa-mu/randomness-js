@@ -11,6 +11,8 @@ env:
   FURNACE_RPC_URL: ${{ secrets.FURNACE_RPC_URL }}
   BASE_PRIVATE_KEY: ${{ secrets.BASE_PRIVATE_KEY }}
   BASE_RPC_URL: ${{ secrets.BASE_RPC_URL }}
+  POLYGON_PRIVATE_KEY: ${{ secrets.POLYGON_PRIVATE_KEY }}
+  POLYGON_RPC_URL: ${{ secrets.POLYGON_RPC_URL }}
 
 jobs:
   build:
