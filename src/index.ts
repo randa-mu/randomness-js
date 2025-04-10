@@ -18,6 +18,7 @@ import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/Rand
 export const FURNACE_TESTNET_CONTRACT_ADDRESS = "0x8192aF4ce49f473fCa7e3e5a8d819B0763Def048"
 export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC"
 export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x31e01BCA94b787D3B4a16C378Bd5D200686dEb99"
+export const POLYGON_POS_CONTRACT_ADDRESS = "0x31e01BCA94b787D3B4a16C378Bd5D200686dEb99"
 
 /* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
 const RANDOMNESS_DST = "randomness:0.0.1:bn254"
@@ -56,6 +57,10 @@ export class Randomness {
         return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS)
     }
 
+    static createPolygonPos(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, POLYGON_POS_CONTRACT_ADDRESS)
+    }
+
     static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
         switch (chainId.toString().toLowerCase()) {
             case "314159":
@@ -72,6 +77,11 @@ export class Randomness {
             case "84532n":
             case "0x14a34":
                 return Randomness.createBaseSepolia(rpc)
+
+            case "137":
+            case "137n":
+            case "0x89":
+                return Randomness.createPolygonPos(rpc)
 
             default:
                 throw new Error("unsupported chainId :(")
