@@ -19,6 +19,8 @@ describe("randomness", () => {
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         await randomness.verify(response)
+
+        rpc.destroy()
     }, TEST_TIMEOUT)
 
     it("can be requested from a furnace testnet and verified", async () => {
@@ -31,6 +33,8 @@ describe("randomness", () => {
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         console.log("randomness requested")
         await randomness.verify(response)
+
+        rpc.destroy()
     }, TEST_TIMEOUT)
 
 })
