@@ -15,7 +15,7 @@ import {TypedContractEvent, TypedListener} from "./generated/common"
 import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/RandomnessSender"
 
 /* addresses of the deployed contracts */
-export const FURNACE_TESTNET_CONTRACT_ADDRESS = "0x6ac6390653d8d75b9baff66401198efc3684e0ec"
+export const FURNACE_TESTNET_CONTRACT_ADDRESS = "0x8192aF4ce49f473fCa7e3e5a8d819B0763Def048"
 export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC"
 
 /* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
