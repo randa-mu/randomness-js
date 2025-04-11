@@ -40,13 +40,18 @@ export class Randomness {
     // only the lord himself knows how to convert from one to the other
     private readonly pk = bn254.G2.ProjectivePoint.fromHex("00f26a1fbba69685a1606f8104d0f218546a774099d78218e01bf63bf08b94fb0eafa51a62570209e04f66f390f41b7a1dae3d9350af7b413e4c65ffc4ca3a6c0815fe3e100c6f2c9a05f8ac898f9aa5c54164771500426ce54b52c6e0958e52111fa5a435e9d442cf69939a379e25841c65c3be365e851fdd04539e9b2462a1")
 
-    constructor(private readonly rpc: Signer | Provider, private readonly contractAddress: string = FURNACE_TESTNET_CONTRACT_ADDRESS) {
+    constructor(
+        private readonly rpc: Signer | Provider,
+        private readonly contractAddress: string = FURNACE_TESTNET_CONTRACT_ADDRESS,
+        private readonly defaultRequestTimeoutMs: number = 15_000
+    ) {
         console.log(`created randomness-js client with address ${contractAddress}`)
         this.contract = RandomnessSender__factory.connect(contractAddress, rpc)
     }
 
     static createFilecoinCalibnet(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS)
+        // filecoin block time is 30s, so give a longer default timeout
+        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS, 90_000)
     }
 
     static createFurnace(rpc: Signer | Provider): Randomness {
@@ -88,7 +93,7 @@ export class Randomness {
         }
     }
 
-    async requestRandomness(confirmations = 1, timeoutMs = 60000): Promise<RandomnessVerificationParameters> {
+    async requestRandomness(confirmations = 1, timeoutMs = this.defaultRequestTimeoutMs): Promise<RandomnessVerificationParameters> {
         if (this.rpc.provider == null) {
             throw Error("RPC requires a provider to request randomness")
         }
