@@ -1,12 +1,7 @@
 import * as dotenv from "dotenv"
 import {describe, it, expect, beforeAll} from "@jest/globals"
 import {JsonRpcProvider, NonceManager, Wallet, WebSocketProvider} from "ethers"
-import {
-    BASE_SEPOLIA_CONTRACT_ADDRESS,
-    FILECOIN_CALIBNET_CONTRACT_ADDRESS,
-    FURNACE_TESTNET_CONTRACT_ADDRESS, POLYGON_POS_CONTRACT_ADDRESS,
-    Randomness
-} from "../src"
+import {Randomness} from "../src"
 
 // filecoin calibnet might take forever
 const TEST_TIMEOUT = 200_000
@@ -19,7 +14,7 @@ describe("randomness", () => {
         const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
 
-        const randomness = new Randomness(wallet, FURNACE_TESTNET_CONTRACT_ADDRESS)
+        const randomness = Randomness.createFurnace(wallet)
         expect(randomness).not.toEqual(null)
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
@@ -33,7 +28,7 @@ describe("randomness", () => {
         const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
 
-        const randomness = new Randomness(wallet, BASE_SEPOLIA_CONTRACT_ADDRESS)
+        const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
@@ -47,7 +42,7 @@ describe("randomness", () => {
         const rpc = createProvider(process.env.POLYGON_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.POLYGON_PRIVATE_KEY || "", rpc))
 
-        const randomness = new Randomness(wallet, POLYGON_POS_CONTRACT_ADDRESS)
+        const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
@@ -61,7 +56,7 @@ describe("randomness", () => {
         const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
 
-        const randomness = new Randomness(wallet, FILECOIN_CALIBNET_CONTRACT_ADDRESS)
+        const randomness = Randomness.createFilecoinCalibnet(wallet)
         expect(randomness).not.toEqual(null)
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
