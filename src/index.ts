@@ -22,10 +22,13 @@ export const POLYGON_POS_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F
 
 /* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
 const RANDOMNESS_DST = "randomness:0.0.1:bn254"
-const BLS_DST = "BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_"
 
 /* ethers.js magic beans */
 const iface = RandomnessSender__factory.createInterface()
+
+function createBlsDst(chainId: bigint) {
+    return `BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_:${encodeParams(["uint256"], [chainId])}`
+}
 
 export type RandomnessVerificationParameters = {
     requestID: bigint,
@@ -43,7 +46,8 @@ export class Randomness {
     constructor(
         private readonly rpc: Signer | Provider,
         private readonly contractAddress: string = FURNACE_TESTNET_CONTRACT_ADDRESS,
-        private readonly defaultRequestTimeoutMs: number = 15_000
+        private readonly chainId: bigint,
+        private readonly defaultRequestTimeoutMs: number = 15_000,
     ) {
         console.log(`created randomness-js client with address ${contractAddress}`)
         this.contract = RandomnessSender__factory.connect(contractAddress, rpc)
@@ -51,19 +55,19 @@ export class Randomness {
 
     static createFilecoinCalibnet(rpc: Signer | Provider): Randomness {
         // filecoin block time is 30s, so give a longer default timeout
-        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS, 90_000)
+        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS, 314159n, 90_000)
     }
 
     static createFurnace(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS)
+        return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS, 64630n)
     }
 
     static createBaseSepolia(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS)
+        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS, 84532n)
     }
 
     static createPolygonPos(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, POLYGON_POS_CONTRACT_ADDRESS)
+        return new Randomness(rpc, POLYGON_POS_CONTRACT_ADDRESS, 137n)
     }
 
     static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
@@ -151,7 +155,7 @@ export class Randomness {
         }
 
         const m = keccak256(encodeParams(["string", "uint256"], [RANDOMNESS_DST, nonce]))
-        return bn254.verifyShortSignature(getBytes(signature), getBytes(m), this.pk, {DST: BLS_DST})
+        return bn254.verifyShortSignature(getBytes(signature), getBytes(m), this.pk, {DST: createBlsDst(this.chainId)})
     }
 }
 
