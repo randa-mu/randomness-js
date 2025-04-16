@@ -1,13 +1,32 @@
 import * as dotenv from "dotenv"
 import {describe, it, expect, beforeAll} from "@jest/globals"
-import {JsonRpcProvider, NonceManager, Wallet, WebSocketProvider} from "ethers"
+import {BytesLike, getBytes, JsonRpcProvider, NonceManager, Wallet, WebSocketProvider} from "ethers"
 import {Randomness} from "../src"
+import {keccak_256} from "@noble/hashes/sha3"
 
 // filecoin calibnet might take forever
 const TEST_TIMEOUT = 200_000
 describe("randomness", () => {
     beforeAll(() => {
         dotenv.config()
+    })
+
+    it("nonsense input shouldn't verify", async () => {
+        const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
+        const randomnessClient = Randomness.createFurnace(wallet)
+
+        const signature = "0xdeadbeefdeadbeefdeadbeefdeadbeefdead"
+        const randomness = keccak_256(getBytes(signature))
+
+        const result = await randomnessClient.verify({
+            requestID: 1n,
+            nonce: 1n,
+            randomness,
+            signature,
+        })
+
+        expect(result).toBeFalsy()
     })
 
     it("can be requested from a furnace testnet and verified", async () => {
@@ -19,7 +38,7 @@ describe("randomness", () => {
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         console.log("randomness requested")
-        await randomness.verify(response)
+        expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
     }, TEST_TIMEOUT)
@@ -33,7 +52,7 @@ describe("randomness", () => {
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         console.log("randomness requested")
-        await randomness.verify(response)
+        expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
     }, TEST_TIMEOUT)
@@ -47,7 +66,7 @@ describe("randomness", () => {
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         console.log("randomness requested")
-        await randomness.verify(response)
+        expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
     }, TEST_TIMEOUT)
@@ -60,7 +79,7 @@ describe("randomness", () => {
         expect(randomness).not.toEqual(null)
 
         const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
-        await randomness.verify(response)
+        expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
     }, TEST_TIMEOUT)
