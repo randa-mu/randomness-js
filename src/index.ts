@@ -41,6 +41,10 @@ export type RandomnessVerificationParameters = {
     signature: BytesLike
 }
 
+export type RandomnessVerificationConfig = {
+    shouldBlowUp: boolean // determines whether the verification function silently returns a boolean on failure or explodes
+}
+
 export class Randomness {
     private readonly contract: RandomnessSender
     // any human who can find the right hex format to parse this point shall be crowned the [king|queen|catgirl] of England
@@ -164,7 +168,7 @@ export class Randomness {
 
     async verify(
         parameters: RandomnessVerificationParameters,
-        config: { shouldBlowUp: boolean } = {shouldBlowUp: true}
+        config: RandomnessVerificationConfig = {shouldBlowUp: true}
     ): Promise<boolean> {
         const {randomness, signature, nonce} = parameters
 
