@@ -9,6 +9,6 @@ describe("creating a BLS DST", () => {
         expect(() => createBlsDst(-1n)).toThrowError()
     })
     it("should correctly format valid chainIDs to 32 bytes", () =>{
-        expect(createBlsDst(1n)).toEqual("BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_:_0x0000000000000000000000000000000000000000000000000000000000000001_")
+        expect(createBlsDst(1n)).toEqual("BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_0x0000000000000000000000000000000000000000000000000000000000000001_")
     })
 })

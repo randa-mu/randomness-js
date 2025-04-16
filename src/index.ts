@@ -31,7 +31,7 @@ export function createBlsDst(chainId: bigint): string {
         throw new Error("cannot create a BLS domain separator for an invalid chainId")
     }
 
-    return `BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_:_${encodeParams(["uint256"], [chainId])}_`
+    return `BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_${encodeParams(["uint256"], [chainId])}_`
 }
 
 export type RandomnessVerificationParameters = {
