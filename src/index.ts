@@ -20,12 +20,15 @@ export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x9c789bc7F2B5c6619Be1572A39F
 export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82"
 export const POLYGON_POS_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82"
 
-/* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
-const RANDOMNESS_DST = "randomness:0.0.1:bn254"
-const BLS_DST = "BLS_SIG_BN254G1_XMD:KECCAK-256_SVDW_RO_NUL_"
-
-/* ethers.js magic beans */
 const iface = RandomnessSender__factory.createInterface()
+
+export function createBlsDst(chainId: bigint): string {
+    if (chainId <= 0n) {
+        throw new Error("cannot create a BLS domain separator for an invalid chainId")
+    }
+
+    return `dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_${encodeParams(["uint256"], [chainId])}_`
+}
 
 export type RandomnessVerificationParameters = {
     requestID: bigint,
@@ -34,16 +37,32 @@ export type RandomnessVerificationParameters = {
     signature: BytesLike
 }
 
+export type RandomnessVerificationConfig = {
+    shouldBlowUp: boolean // determines whether the verification function silently returns a boolean on failure or explodes
+}
+
 export class Randomness {
     private readonly contract: RandomnessSender
-    // the format of this public key is _NOT_ the same format as evm-land.
-    // only the lord himself knows how to convert from one to the other
-    private readonly pk = bn254.G2.ProjectivePoint.fromHex("00f26a1fbba69685a1606f8104d0f218546a774099d78218e01bf63bf08b94fb0eafa51a62570209e04f66f390f41b7a1dae3d9350af7b413e4c65ffc4ca3a6c0815fe3e100c6f2c9a05f8ac898f9aa5c54164771500426ce54b52c6e0958e52111fa5a435e9d442cf69939a379e25841c65c3be365e851fdd04539e9b2462a1")
+    // any human who can find the right hex format to parse this point shall be crowned the [king|queen|catgirl] of England
+    private readonly pk = new bn254.G2.ProjectivePoint(
+        {
+            c0: 17445541620214498517833872661220947475697073327136585274784354247720096233162n,
+            c1: 18268991875563357240413244408004758684187086817233527689475815128036446189503n
+        },
+        {
+            c0: 11401601170172090472795479479864222172123705188644469125048759621824127399516n,
+            c1: 8044854403167346152897273335539146380878155193886184396711544300199836788154n
+        },
+        {
+            c0: 1n, c1: 0n
+        }
+    )
 
     constructor(
         private readonly rpc: Signer | Provider,
         private readonly contractAddress: string = FURNACE_TESTNET_CONTRACT_ADDRESS,
-        private readonly defaultRequestTimeoutMs: number = 15_000
+        private readonly chainId: bigint,
+        private readonly defaultRequestTimeoutMs: number = 15_000,
     ) {
         console.log(`created randomness-js client with address ${contractAddress}`)
         this.contract = RandomnessSender__factory.connect(contractAddress, rpc)
@@ -51,19 +70,19 @@ export class Randomness {
 
     static createFilecoinCalibnet(rpc: Signer | Provider): Randomness {
         // filecoin block time is 30s, so give a longer default timeout
-        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS, 90_000)
+        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS, 314159n, 90_000)
     }
 
     static createFurnace(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS)
+        return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS, 64630n)
     }
 
     static createBaseSepolia(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS)
+        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS, 84532n)
     }
 
     static createPolygonPos(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, POLYGON_POS_CONTRACT_ADDRESS)
+        return new Randomness(rpc, POLYGON_POS_CONTRACT_ADDRESS, 137n)
     }
 
     static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
@@ -143,15 +162,40 @@ export class Randomness {
         })
     }
 
-    async verify(parameters: RandomnessVerificationParameters): Promise<boolean> {
+    async verify(
+        parameters: RandomnessVerificationParameters,
+        config: RandomnessVerificationConfig = {shouldBlowUp: true}
+    ): Promise<boolean> {
         const {randomness, signature, nonce} = parameters
 
-        if (!equalBytes(getBytes(keccak256(signature)), getBytes(randomness))) {
+        const signatureBytes = getBytes(signature)
+        if (!equalBytes(getBytes(keccak256(signatureBytes)), getBytes(randomness))) {
             throw Error("randomness did not match the signature provided")
         }
 
-        const m = keccak256(encodeParams(["string", "uint256"], [RANDOMNESS_DST, nonce]))
-        return bn254.verifyShortSignature(getBytes(signature), getBytes(m), this.pk, {DST: BLS_DST})
+        // we go through these hoops to give callers the option of using the boolean or
+        // using exceptions for control flow
+        let verifies = false
+        let errorDuringVerification = false
+        try {
+            const m = getBytes(keccak256(encodeParams(["uint256"], [nonce])))
+            verifies = bn254.verifyShortSignature(signatureBytes, m, this.pk, {DST: createBlsDst(this.chainId)})
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_) {
+            errorDuringVerification = true
+        }
+
+        if (verifies) {
+            return true
+        }
+        if (!config.shouldBlowUp) {
+            return false
+        }
+        if (!errorDuringVerification) {
+            throw Error("signature failed to verify")
+        }
+        throw Error("error during signature verification: was your signature formatted correctly?")
     }
 }
 
