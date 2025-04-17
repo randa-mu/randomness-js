@@ -20,10 +20,6 @@ export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x9c789bc7F2B5c6619Be1572A39F
 export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82"
 export const POLYGON_POS_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82"
 
-/* some cryptographic parameters that are also defined in the contracts, but we duplicate here for performance */
-const RANDOMNESS_DST = "randomness:0.0.1:bn254"
-
-/* ethers.js magic beans */
 const iface = RandomnessSender__factory.createInterface()
 
 export function createBlsDst(chainId: bigint): string {
@@ -182,7 +178,7 @@ export class Randomness {
         let verifies = false
         let errorDuringVerification = false
         try {
-            const m = getBytes(keccak256(encodeParams(["string", "uint256"], [RANDOMNESS_DST, nonce])))
+            const m = getBytes(keccak256(encodeParams(["uint256"], [nonce])))
             verifies = bn254.verifyShortSignature(signatureBytes, m, this.pk, {DST: createBlsDst(this.chainId)})
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
