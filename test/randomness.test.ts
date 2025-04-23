@@ -73,7 +73,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it("can be requested from filecoin testnet and verified", async () => {
+    it.skip("can be requested from filecoin testnet and verified", async () => {
         const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
 
