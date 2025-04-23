@@ -1,11 +1,13 @@
 import * as dotenv from "dotenv"
 import {describe, it, expect, beforeAll} from "@jest/globals"
-import {BytesLike, getBytes, JsonRpcProvider, NonceManager, Wallet, WebSocketProvider} from "ethers"
+import {getBytes, JsonRpcProvider, NonceManager, Wallet, WebSocketProvider} from "ethers"
 import {Randomness} from "../src"
 import {keccak_256} from "@noble/hashes/sha3"
 
 // filecoin calibnet might take forever
-const TEST_TIMEOUT = 200_000
+const TEST_TIMEOUT = 20_000
+const FILECOIN_TEST_TIMEOUT = 200_000
+
 describe("randomness", () => {
     beforeAll(() => {
         dotenv.config()
@@ -24,7 +26,7 @@ describe("randomness", () => {
             nonce: 1n,
             randomness,
             signature,
-        })
+        }, { shouldBlowUp: false })
 
         expect(result).toBeFalsy()
     })
@@ -82,7 +84,7 @@ describe("randomness", () => {
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
-    }, TEST_TIMEOUT)
+    }, FILECOIN_TEST_TIMEOUT)
 
 })
 
