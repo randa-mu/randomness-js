@@ -80,7 +80,7 @@ describe("randomness", () => {
         const randomness = Randomness.createFilecoinCalibnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1, FILECOIN_TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
