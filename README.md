@@ -1,31 +1,85 @@
-# randomness-js
+# Randomness-JS
 
-A convenience library for retrieving, verifying and deriving randomness from the dcrypt network.
+A JavaScript/TypeScript SDK to request, verify and derive randomness  from [the dcipher network](https://dcipher.network/), supported by the [randomness-solidity]((https://github.com/randa-mu/randomness-solidity)) contract. 
+## 🌍 Overview
 
-Build everything by running `npm run build`. This creates a dist directory containing commonjs and esm modules.
+This project provides a client-side SDK to request on-chain randomnesss from the supported blockchains, by interacting with the `randomness-sender` contract implemented in[`randomness-solidity`](https://github.com/randa-mu/randomness-solidity). It allows you to:
 
-Solidity interfaces for randomness can be found in our [solidity repo](https://github.com/randa-mu/randamu-solidity-contracts).
+- Integrate with a deployed `RandomnessSender` smart contract
+- Request and verify on-chain randomness from your dApp frontend/backend
 
-## Usage
-First install the package by running `npm install randomness-js`
-Then create an instance of randomness for your preferred network. An example for filecoin is below:
-```javascript
-import { JsonRpcProvider, Wallet } from "ethers"
+
+### 🌐 Supported Networks
+
+| Network              | Chain ID  | Supported | Randomness Contract |
+|----------------------|-----------|-----------|-----------|
+| Filecoin Calibration | 314159    | ✅         |[0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC](https://calibration.filfox.info/en/address/0x9c789bc7F2B5c6619Be1572A39F2C3d6f33001dC) |
+| Base Sepolia              | 84532         | ✅         | [0x455bfe4B1B4393b458d413E2B0778A95F9B84B82](https://sepolia.basescan.org/address/0x455bfe4B1B4393b458d413E2B0778A95F9B84B82) |
+| Polygon PoS            | 137  | ✅         | [0x455bfe4B1B4393b458d413E2B0778A95F9B84B82](https://polygonscan.com/address/0x455bfe4B1B4393b458d413E2B0778A95F9B84B82) |
+
+## 📦 Getting started
+
+### Installation
+
+Install the `randomness-js` library into your frontend project.
+```bash
+npm install randomness-js
+# or
+yarn add randomness-js
+```
+
+### 🛠 Usage
+
+#### Connect to the supported network
+Create an instance of randomness for your preferred network.
+```ts
 import { Randomness } from "randomness-js"
+import { JsonRpcProvider, Wallet } from "ethers"
 
 // set up your ethers objects
 const rpc = new JsonRpcProvider("https://api.calibration.node.glif.io/rpc/v1")
 const wallet = new Wallet("<YOUR PRIVATE KEY HERE>", rpc)
 
 // create and request some randomness
-const randomness = Randomness.createFilecoinCalibnet(wallet)
-const response = await randomness.requestRandomness()
+const randomness = Randomness.createBaseSepolia(wallet)
+```
+You can also create the randmness instance for your desired network using its chainId, check the [supported networks](#-supported-networks) for details.
+```ts
+import { Randomness } from "randomness-js"
 
-// the smart contracts verify the randomness anyway, but doesn't hurt to verify it for yourself to be sure :)
+// set up your ethers objects
+const rpc = new JsonRpcProvider("<RPC ENDPOINT URL>")
+const wallet = new Wallet("<YOUR PRIVATE KEY HERE>", rpc)
+
+// create and request some randomness
+const randomness = Randomness.createFromChainId(wallet, <SUPPORTED_CHAIN_ID>)
+```
+
+#### Request randomness
+
+```ts
+const response = await randomness.requestRandomness()
+```
+
+#### Verify randomness
+The smart contracts verify the randomness anyway, but doesn't hurt to verify it for yourself to be sure.
+```ts
 await randomness.verify(response)
 ```
 
 ## Development
-- Clone the repo
-- run `git submodule update --init --recursive`
+Clone the repo
+```bash
+git clone https://github.com/randa-mu/randomness-js.git
+cd randomness-js
+git submodule update --init --recursive
+```
 For running the tests, you need to create a `.env` file at the project root filling in the fields detailed in [`.env.sample`](./.env.sample).
+
+## 🤝 Contributing
+
+We welcome pull requests and issues. If you find a bug or want to request a feature, feel free to open an issue or PR!
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
