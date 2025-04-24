@@ -40,18 +40,12 @@ import { JsonRpcProvider, Wallet } from "ethers"
 const rpc = new JsonRpcProvider("https://api.calibration.node.glif.io/rpc/v1")
 const wallet = new Wallet("<YOUR PRIVATE KEY HERE>", rpc)
 
-// create and request some randomness
+// create randomness instance on Base Sepolia testnet
 const randomness = Randomness.createBaseSepolia(wallet)
 ```
 You can also create the randomness instance for your desired network using its chainId, check the [supported networks](#-supported-networks) for details.
 ```ts
-import { Randomness } from "randomness-js"
-
-// set up your ethers objects
-const rpc = new JsonRpcProvider("<RPC ENDPOINT URL>")
-const wallet = new Wallet("<YOUR PRIVATE KEY HERE>", rpc)
-
-// create and request some randomness
+//create randomness instance using the chainID
 const randomness = Randomness.createFromChainId(wallet, <SUPPORTED_CHAIN_ID>)
 ```
 
