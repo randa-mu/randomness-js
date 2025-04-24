@@ -1,9 +1,9 @@
 # Randomness-JS
 
-A JavaScript/TypeScript SDK to request, verify and derive randomness  from [the dcipher network](https://dcipher.network/), supported by the [randomness-solidity]((https://github.com/randa-mu/randomness-solidity)) contract. 
+A JavaScript/TypeScript SDK to request, verify, and derive randomness  from [the dcipher network](https://dcipher.network/), supported by the [randomness-solidity]((https://github.com/randa-mu/randomness-solidity)) contract. 
 ## 🌍 Overview
 
-This project provides a client-side SDK to request on-chain randomnesss from the supported blockchains, by interacting with the `randomness-sender` contract implemented in[`randomness-solidity`](https://github.com/randa-mu/randomness-solidity). It allows you to:
+This project provides a client-side SDK to request on-chain randomness from the supported blockchains by interacting with the `randomness-sender` contract implemented in[`randomness-solidity`](https://github.com/randa-mu/randomness-solidity). It allows you to:
 
 - Integrate with a deployed `RandomnessSender` smart contract
 - Request and verify on-chain randomness from your dApp frontend/backend
@@ -43,7 +43,7 @@ const wallet = new Wallet("<YOUR PRIVATE KEY HERE>", rpc)
 // create and request some randomness
 const randomness = Randomness.createBaseSepolia(wallet)
 ```
-You can also create the randmness instance for your desired network using its chainId, check the [supported networks](#-supported-networks) for details.
+You can also create the randomness instance for your desired network using its chainId, check the [supported networks](#-supported-networks) for details.
 ```ts
 import { Randomness } from "randomness-js"
 
@@ -74,7 +74,7 @@ git clone https://github.com/randa-mu/randomness-js.git
 cd randomness-js
 git submodule update --init --recursive
 ```
-For running the tests, you need to create a `.env` file at the project root filling in the fields detailed in [`.env.sample`](./.env.sample).
+For running the tests, you need to create a `.env` file at the project root, filling in the fields detailed in [`.env.sample`](./.env.sample).
 
 ## 🤝 Contributing
 
