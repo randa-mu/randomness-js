@@ -1,6 +1,6 @@
 {
   "name": "randomness-js",
-  "version": "0.0.1-rc13",
+  "version": "0.0.1-rc14",
   "description": "A library for consuming, verifying and using randomness from the dcipher network",
   "source": "src/index.ts",
   "main": "./dist/cjs/index.cjs",
@@ -44,7 +44,7 @@
     "evm",
     "ethereum"
   ],
-  "author": "CluEleSsUK",
+  "author": "Randamu",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/randa-mu/randomness-js/issues"
