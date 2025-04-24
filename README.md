@@ -68,7 +68,16 @@ git clone https://github.com/randa-mu/randomness-js.git
 cd randomness-js
 git submodule update --init --recursive
 ```
+Install the dependencies and build the projects to generate contract files.
+```bash
+npm install
+npm run build
+```
+
 For running the tests, you need to create a `.env` file at the project root, filling in the fields detailed in [`.env.sample`](./.env.sample).
+```bash
+npm run test
+```
 
 ## 🤝 Contributing
 
