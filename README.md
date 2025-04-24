@@ -28,7 +28,7 @@ npm install randomness-js
 yarn add randomness-js
 ```
 
-### 🛠 Usage
+### Usage
 
 #### Connect to the supported network
 Create an instance of randomness for your preferred network.
@@ -67,7 +67,7 @@ The smart contracts verify the randomness anyway, but doesn't hurt to verify it 
 await randomness.verify(response)
 ```
 
-## Development
+## 🛠 Development
 Clone the repo
 ```bash
 git clone https://github.com/randa-mu/randomness-js.git
