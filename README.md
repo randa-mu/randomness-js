@@ -1,4 +1,4 @@
-# Randomness-JS
+# randomness-JS
 
 A JavaScript/TypeScript SDK to request, verify, and derive randomness  from [the dcipher network](https://dcipher.network/), supported by the [randomness-solidity](https://github.com/randa-mu/randomness-solidity) contract. 
 ## 🌍 Overview
