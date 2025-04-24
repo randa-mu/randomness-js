@@ -1,6 +1,6 @@
 # Randomness-JS
 
-A JavaScript/TypeScript SDK to request, verify, and derive randomness  from [the dcipher network](https://dcipher.network/), supported by the [randomness-solidity]((https://github.com/randa-mu/randomness-solidity)) contract. 
+A JavaScript/TypeScript SDK to request, verify, and derive randomness  from [the dcipher network](https://dcipher.network/), supported by the [randomness-solidity](https://github.com/randa-mu/randomness-solidity) contract. 
 ## 🌍 Overview
 
 This project provides a client-side SDK to request on-chain randomness from the supported blockchains by interacting with the `randomness-sender` contract implemented in[`randomness-solidity`](https://github.com/randa-mu/randomness-solidity). It allows you to:
