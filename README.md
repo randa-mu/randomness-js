@@ -56,7 +56,7 @@ const response = await randomness.requestRandomness()
 ```
 
 #### Verify randomness
-The smart contracts verify the randomness anyway, but doesn't hurt to verify it for yourself to be sure.
+The smart contracts verify the randomness anyway, but it doesn't hurt to verify it for yourself to be sure.
 ```ts
 await randomness.verify(response)
 ```
