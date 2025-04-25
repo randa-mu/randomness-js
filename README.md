@@ -61,6 +61,11 @@ The smart contracts verify the randomness anyway, but it doesn't hurt to verify 
 await randomness.verify(response)
 ```
 
+You can avoid throwing errors on verification failure by passing config parameters like so:
+```ts
+const isVerified = await randomness.verify(response, { shouldBlowUp: false })
+```
+
 ## 🛠 Development
 Clone the repo
 ```bash
