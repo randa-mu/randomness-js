@@ -166,7 +166,7 @@ export class Randomness {
         }
         const feeData = await this.rpc.provider.getFeeData()
         const txGasPrice = getGasPrice(feeData, gasPriceMultiplier)
-        return await this.contract.estimateRequestPriceNative(callbackGasLimit, txGasPrice)
+        return this.contract.estimateRequestPriceNative(callbackGasLimit, txGasPrice)
     }
 
     static createFilecoinMainnet(rpc: Signer | Provider): Randomness {
