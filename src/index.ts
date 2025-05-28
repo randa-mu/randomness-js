@@ -9,7 +9,6 @@ import {
 import {bn254} from "@kevincharm/noble-bn254-drand"
 import {equalBytes} from "@noble/curves/abstract/utils"
 import {encodeParams, extractSingleLog} from "./ethers-helpers"
-import {withTimeout} from "./misc"
 import {RandomnessSender__factory} from "./generated"
 import {TypedContractEvent, TypedListener} from "./generated/common"
 import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/RandomnessSender"
@@ -56,7 +55,7 @@ export class Randomness {
 
     async requestRandomness(
         callbackGasLimit: bigint = this.networkConfig.callbackGasLimitDefault,
-        gasMultiplier: bigint = 1n,
+        gasMultiplier: bigint = this.networkConfig.gasMultiplierDefault,
         timeoutMs = this.defaultRequestTimeoutMs,
         confirmations = 1
     ): Promise<RandomnessVerificationParameters> {
@@ -159,7 +158,7 @@ export class Randomness {
 
     async getRequestPriceEstimate(
         callbackGasLimit: bigint = this.networkConfig.callbackGasLimitDefault,
-        gasPriceMultiplier: bigint = 1n
+        gasPriceMultiplier: bigint = this.networkConfig.gasMultiplierDefault
     ): Promise<bigint> {
         if (this.rpc.provider == null) {
             throw new Error("RPC requires a provider to estimate gas")
