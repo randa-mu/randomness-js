@@ -13,22 +13,17 @@ import {withTimeout} from "./misc"
 import {RandomnessSender__factory} from "./generated"
 import {TypedContractEvent, TypedListener} from "./generated/common"
 import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/RandomnessSender"
-
-/* addresses of the deployed contracts */
-export const FURNACE_TESTNET_CONTRACT_ADDRESS = "0x657980071DA65bAa33783F738409A6a45FDb618D"
-export const FILECOIN_CALIBNET_CONTRACT_ADDRESS = "0x91c7774C7476F3832919adE7690467DF91bfd919"
-export const BASE_SEPOLIA_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82"
-export const POLYGON_POS_CONTRACT_ADDRESS = "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82"
+import {
+    Network,
+    configForChainId,
+    BASE_SEPOLIA,
+    FILECOIN_CALIBNET,
+    FILECOIN_MAINNET,
+    FURNACE,
+    POLYGON_POS, DCIPHER_PUBLIC_KEY, AVALANCHE_C_CHAIN, OPTIMISM_SEPOLIA, ARBITRUM_SEPOLIA, SEI_TESTNET
+} from "./networks"
 
 const iface = RandomnessSender__factory.createInterface()
-
-export function createBlsDst(chainId: bigint): string {
-    if (chainId <= 0n) {
-        throw new Error("cannot create a BLS domain separator for an invalid chainId")
-    }
-
-    return `dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_${encodeParams(["uint256"], [chainId])}_`
-}
 
 export type RandomnessVerificationParameters = {
     requestID: bigint,
@@ -43,73 +38,19 @@ export type RandomnessVerificationConfig = {
 
 export class Randomness {
     private readonly contract: RandomnessSender
-    // any human who can find the right hex format to parse this point shall be crowned the [king|queen|catgirl] of England
-    private readonly pk = new bn254.G2.ProjectivePoint(
-        {
-            c0: 17445541620214498517833872661220947475697073327136585274784354247720096233162n,
-            c1: 18268991875563357240413244408004758684187086817233527689475815128036446189503n
-        },
-        {
-            c0: 11401601170172090472795479479864222172123705188644469125048759621824127399516n,
-            c1: 8044854403167346152897273335539146380878155193886184396711544300199836788154n
-        },
-        {
-            c0: 1n, c1: 0n
-        }
-    )
 
     constructor(
         private readonly rpc: Signer | Provider,
-        private readonly contractAddress: string = FURNACE_TESTNET_CONTRACT_ADDRESS,
-        private readonly chainId: bigint,
+        private readonly network: Network,
         private readonly defaultRequestTimeoutMs: number = 15_000,
     ) {
-        console.log(`created randomness-js client with address ${contractAddress}`)
-        this.contract = RandomnessSender__factory.connect(contractAddress, rpc)
+        console.log(`created randomness-js client with address ${this.network.contractAddress}`)
+        this.contract = RandomnessSender__factory.connect(this.network.contractAddress, rpc)
     }
 
-    static createFilecoinCalibnet(rpc: Signer | Provider): Randomness {
-        // filecoin block time is 30s, so give a longer default timeout
-        return new Randomness(rpc, FILECOIN_CALIBNET_CONTRACT_ADDRESS, 314159n, 90_000)
-    }
-
-    static createFurnace(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, FURNACE_TESTNET_CONTRACT_ADDRESS, 64630n)
-    }
-
-    static createBaseSepolia(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, BASE_SEPOLIA_CONTRACT_ADDRESS, 84532n)
-    }
-
-    static createPolygonPos(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, POLYGON_POS_CONTRACT_ADDRESS, 137n)
-    }
-
+    // you can create a client from the chainID or use the static methods per chain at the bottom
     static createFromChainId(rpc: Signer | Provider, chainId: BigNumberish): Randomness {
-        switch (chainId.toString().toLowerCase()) {
-            case "314159":
-            case "314159n":
-            case "0x4cb2f":
-                return Randomness.createFilecoinCalibnet(rpc)
-
-            case "64630":
-            case "64630n":
-            case "0xfc76":
-                return Randomness.createFurnace(rpc)
-
-            case "84532":
-            case "84532n":
-            case "0x14a34":
-                return Randomness.createBaseSepolia(rpc)
-
-            case "137":
-            case "137n":
-            case "0x89":
-                return Randomness.createPolygonPos(rpc)
-
-            default:
-                throw new Error("unsupported chainId :(")
-        }
+        return new Randomness(rpc, configForChainId(chainId))
     }
 
     async requestRandomness(confirmations = 1, timeoutMs = this.defaultRequestTimeoutMs): Promise<RandomnessVerificationParameters> {
@@ -125,7 +66,7 @@ export class Randomness {
             throw Error("no receipt because confirmations were 0")
         }
 
-        const [requestID, nonce] = extractSingleLog(iface, receipt, this.contractAddress, iface.getEvent("RandomnessRequested"))
+        const [requestID, nonce] = extractSingleLog(iface, receipt, this.network.contractAddress, iface.getEvent("RandomnessRequested"))
 
         return new Promise((resolve, reject) => {
             // then we have to both check the past and listen to the future for emitted events
@@ -179,7 +120,7 @@ export class Randomness {
         let errorDuringVerification = false
         try {
             const m = getBytes(keccak256(encodeParams(["uint256"], [nonce])))
-            verifies = bn254.verifyShortSignature(signatureBytes, m, this.pk, {DST: createBlsDst(this.chainId)})
+            verifies = bn254.verifyShortSignature(signatureBytes, m, DCIPHER_PUBLIC_KEY, {DST: this.network.dst})
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_) {
@@ -196,6 +137,46 @@ export class Randomness {
             throw Error("signature failed to verify")
         }
         throw Error("error during signature verification: was your signature formatted correctly?")
+    }
+
+
+    static createFilecoinMainnet(rpc: Signer | Provider): Randomness {
+        // filecoin block time is 30s, so give a longer default timeout
+        return new Randomness(rpc, FILECOIN_MAINNET, 90_000)
+    }
+
+    static createFilecoinCalibnet(rpc: Signer | Provider): Randomness {
+        // filecoin block time is 30s, so give a longer default timeout
+        return new Randomness(rpc, FILECOIN_CALIBNET, 90_000)
+    }
+
+    static createFurnace(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, FURNACE)
+    }
+
+    static createBaseSepolia(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, BASE_SEPOLIA)
+    }
+
+    static createPolygonPos(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, POLYGON_POS)
+    }
+
+    static createAvalancheCChain(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, AVALANCHE_C_CHAIN)
+    }
+
+    static createOptimismSepolia(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, OPTIMISM_SEPOLIA)
+
+    }
+
+    static createArbitrumSepolia(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, ARBITRUM_SEPOLIA)
+    }
+
+    static createSeiTestnet(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, SEI_TESTNET)
     }
 }
 
