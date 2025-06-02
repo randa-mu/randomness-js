@@ -65,7 +65,7 @@ export class Randomness {
         const feeData = await this.rpc.provider.getFeeData()
         const txGasPrice = getGasPrice(feeData, gasMultiplier)
         const requestPrice = await this.contract.estimateRequestPriceNative(
-            this.networkConfig.gasLimit,
+            callbackGasLimit,
             txGasPrice
         );
 
@@ -76,6 +76,7 @@ export class Randomness {
             value: valueToSend,
             maxFeePerGas: feeData.maxFeePerGas,
             maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+            gasLimit: this.networkConfig.gasLimit,
         })
 
         const receipt = await tx.wait(confirmations, timeoutMs)
