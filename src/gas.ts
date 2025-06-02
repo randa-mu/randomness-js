@@ -1,8 +1,6 @@
 import {FeeData} from "ethers"
 
 
-export const DEFAULT_CALLBACK_GAS_LIMIT = 1_000_000n
-
 export function getGasPrice(feeData: FeeData, gasPriceMultiplier: bigint): bigint {
     // feeData.gasPrice: Legacy flat gas price (used on non-EIP-1559 chains like Filecoin or older EVMs)
     if (feeData.gasPrice != null) {
