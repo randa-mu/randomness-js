@@ -33,7 +33,7 @@ export type NetworkConfig = {
 export const FILECOIN_CALIBNET: NetworkConfig = {
     name: "filecoin_calibnet",
     chainId: 314159n,
-    contractAddress: "0x91c7774C7476F3832919adE7690467DF91bfd919",
+    contractAddress: "0x94C5774DEa83a921244BF362a98c12A5aAD18c87",
     dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x000000000000000000000000000000000000000000000000000000000004cb2f_",
     gasLimit: 5_000_000,
     maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
@@ -72,7 +72,7 @@ export const BASE_SEPOLIA: NetworkConfig = {
 export const POLYGON_POS: NetworkConfig = {
     name: "polygon_pos",
     chainId: 137n,
-    contractAddress: "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82",
+    contractAddress: "0xf4e080Db4765C856c0af43e4A8C4e31aA3b48779",
     dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x0000000000000000000000000000000000000000000000000000000000000089_",
     gasLimit: 100_000,
     maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
