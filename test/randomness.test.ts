@@ -38,7 +38,7 @@ describe("randomness", () => {
         const randomness = Randomness.createFurnace(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -51,7 +51,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -64,7 +64,7 @@ describe("randomness", () => {
         const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -77,7 +77,7 @@ describe("randomness", () => {
         const randomness = Randomness.createFilecoinCalibnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, FILECOIN_TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 FILECOIN_TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -90,7 +90,7 @@ describe("randomness", () => {
         const randomness = Randomness.createFilecoinMainnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, FILECOIN_TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 FILECOIN_TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -103,7 +103,7 @@ describe("randomness", () => {
         const randomness = Randomness.createAvalancheCChain(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -116,7 +116,7 @@ describe("randomness", () => {
         const randomness = Randomness.createOptimismSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -130,7 +130,7 @@ describe("randomness", () => {
         expect(randomness).not.toEqual(null)
         console.log("randomness requested")
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -143,7 +143,7 @@ describe("randomness", () => {
         const randomness = Randomness.createSeiTestnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n, 50n, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(1 TEST_TIMEOUT)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()

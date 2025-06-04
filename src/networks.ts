@@ -59,7 +59,7 @@ export const FILECOIN_MAINNET: NetworkConfig = {
 export const BASE_SEPOLIA: NetworkConfig = {
     name: "base_sepolia",
     chainId: 84532n,
-    contractAddress: "0x455bfe4B1B4393b458d413E2B0778A95F9B84B82",
+    contractAddress: "0xf4e080Db4765C856c0af43e4A8C4e31aA3b48779",
     dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x0000000000000000000000000000000000000000000000000000000000014a34_",
     gasLimit: 100_000,
     maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
@@ -85,7 +85,7 @@ export const POLYGON_POS: NetworkConfig = {
 export const FURNACE: NetworkConfig = {
     name: "furnace",
     chainId: 64630n,
-    contractAddress: "0x1c3E82cE0b42c48aE0684938207E68e32A256c04",
+    contractAddress: "0xbf6b0Ed504bf595021a634e5d7161DD20ea42f18",
     dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x000000000000000000000000000000000000000000000000000000000000fc76_",
     gasLimit: 100_000,
     maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
