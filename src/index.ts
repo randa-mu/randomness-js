@@ -6,12 +6,12 @@ import {
     Provider,
     Signer,
 } from "ethers"
-import {bn254} from "@kevincharm/noble-bn254-drand"
-import {equalBytes} from "@noble/curves/abstract/utils"
-import {encodeParams, extractSingleLog} from "./ethers-helpers"
-import {RandomnessSender__factory} from "./generated"
-import {TypedContractEvent, TypedListener} from "./generated/common"
-import {RandomnessCallbackSuccessEvent, RandomnessSender} from "./generated/RandomnessSender"
+import { bn254 } from "@kevincharm/noble-bn254-drand"
+import { equalBytes } from "@noble/curves/abstract/utils"
+import { encodeParams, extractSingleLog } from "./ethers-helpers"
+import { RandomnessSender__factory } from "./generated"
+import { TypedContractEvent, TypedListener } from "./generated/common"
+import { RandomnessCallbackSuccessEvent, RandomnessSender } from "./generated/RandomnessSender"
 import {
     NetworkConfig,
     configForChainId,
@@ -21,7 +21,7 @@ import {
     FURNACE,
     POLYGON_POS, DCIPHER_PUBLIC_KEY, AVALANCHE_C_CHAIN, OPTIMISM_SEPOLIA, ARBITRUM_SEPOLIA, SEI_TESTNET
 } from "./networks"
-import {getGasPrice} from "./gas"
+import { getGasPrice } from "./gas"
 
 const iface = RandomnessSender__factory.createInterface()
 
@@ -42,7 +42,7 @@ export class Randomness {
     constructor(
         private readonly rpc: Signer | Provider,
         private readonly networkConfig: NetworkConfig,
-        private readonly defaultRequestTimeoutMs: number = 15_000,
+        private readonly defaultRequestTimeoutMs: number = 60_000,
     ) {
         console.log(`created randomness-js client with address ${this.networkConfig.contractAddress}`)
         this.contract = RandomnessSender__factory.connect(this.networkConfig.contractAddress, rpc)
@@ -55,37 +55,46 @@ export class Randomness {
 
     async requestRandomness(
         callbackGasLimit: bigint = this.networkConfig.callbackGasLimitDefault,
-        gasMultiplier: bigint = this.networkConfig.gasMultiplierDefault,
+        // gasMultiplier: bigint = this.networkConfig.gasMultiplierDefault, // This variable is not required
         timeoutMs = this.defaultRequestTimeoutMs,
         confirmations = 1
     ): Promise<RandomnessVerificationParameters> {
         if (this.rpc.provider == null) {
             throw Error("RPC requires a provider to request randomness")
         }
+        // 1. Get request price for randomness request
         const feeData = await this.rpc.provider.getFeeData()
-        const txGasPrice = getGasPrice(feeData, gasMultiplier)
-        const requestPrice = await this.contract.estimateRequestPriceNative(
-            callbackGasLimit,
-            txGasPrice
-        );
+        
+        const requestPrice = await this.calculateRequestPriceNative(callbackGasLimit);
 
         // 2. Apply buffer e.g. 100% = 2x total
         const valueToSend = requestPrice + (requestPrice * this.networkConfig.gasBufferPercent) / 100n;
+        
+        // 3. Send randomness request
+        const estimatedGas = await this.contract.requestRandomness.estimateGas(
+            callbackGasLimit,
+            {
+                value: requestPrice,
+                maxFeePerGas: feeData.maxFeePerGas,
+                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+                gasLimit: this.networkConfig.gasLimit,
+            }
+        );
 
         const tx = await this.contract.requestRandomness(callbackGasLimit, {
             value: valueToSend,
+            gasLimit: estimatedGas,
             maxFeePerGas: feeData.maxFeePerGas,
             maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-            gasLimit: this.networkConfig.gasLimit,
-        })
-
+        });
+        
         const receipt = await tx.wait(confirmations, timeoutMs)
         if (!receipt) {
             throw Error("no receipt because confirmations were 0")
         }
 
         const [requestID, nonce] = extractSingleLog(iface, receipt, this.networkConfig.contractAddress, iface.getEvent("RandomnessRequested"))
-
+        
         return new Promise((resolve, reject) => {
             // then we have to both check the past and listen to the future for emitted events
             // lest we miss our fulfilled randomness. We set the listeners first... in case
@@ -123,9 +132,9 @@ export class Randomness {
 
     async verify(
         parameters: RandomnessVerificationParameters,
-        config: RandomnessVerificationConfig = {shouldBlowUp: true}
+        config: RandomnessVerificationConfig = { shouldBlowUp: true }
     ): Promise<boolean> {
-        const {randomness, signature, nonce} = parameters
+        const { randomness, signature, nonce } = parameters
 
         const signatureBytes = getBytes(signature)
         if (!equalBytes(getBytes(keccak256(signatureBytes)), getBytes(randomness))) {
@@ -138,7 +147,7 @@ export class Randomness {
         let errorDuringVerification = false
         try {
             const m = getBytes(keccak256(encodeParams(["uint256"], [nonce])))
-            verifies = bn254.verifyShortSignature(signatureBytes, m, DCIPHER_PUBLIC_KEY, {DST: this.networkConfig.dst})
+            verifies = bn254.verifyShortSignature(signatureBytes, m, DCIPHER_PUBLIC_KEY, { DST: this.networkConfig.dst })
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_) {
@@ -157,16 +166,15 @@ export class Randomness {
         throw Error("error during signature verification: was your signature formatted correctly?")
     }
 
-    async getRequestPriceEstimate(
-        callbackGasLimit: bigint = this.networkConfig.callbackGasLimitDefault,
-        gasPriceMultiplier: bigint = this.networkConfig.gasMultiplierDefault
-    ): Promise<bigint> {
-        if (this.rpc.provider == null) {
-            throw new Error("RPC requires a provider to estimate gas")
-        }
-        const feeData = await this.rpc.provider.getFeeData()
-        const txGasPrice = getGasPrice(feeData, gasPriceMultiplier)
-        return this.contract.estimateRequestPriceNative(callbackGasLimit, txGasPrice)
+
+    /**
+    * Calculates the request price for a blocklock request given the callbackGasLimit.
+    * @param callbackGasLimit The callbackGasLimit to use when fulfilling the request with a decryption key.
+    * @returns The estimated request price
+    */
+    async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<bigint> {
+        const requestPrice = await this.contract.calculateRequestPriceNative(callbackGasLimit)
+        return requestPrice;
     }
 
     static createFilecoinMainnet(rpc: Signer | Provider): Randomness {
@@ -212,7 +220,7 @@ export class Randomness {
 function createRandomnessListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void): TypedListener<TypedContractEvent> {
     return (log: RandomnessCallbackSuccessEvent.Log) => {
         const [requestID, randomness, signature] = log.args
-        cb({requestID, nonce, randomness, signature})
+        cb({ requestID, nonce, randomness, signature })
     }
 }
 
@@ -226,6 +234,6 @@ function createRandomnessLogListener(nonce: bigint, cb: (arg: RandomnessVerifica
             return
         }
         const [requestID, randomness, signature] = logs[0].args
-        cb({requestID, randomness, signature, nonce})
+        cb({ requestID, randomness, signature, nonce })
     }
 }
