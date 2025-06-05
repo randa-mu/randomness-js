@@ -55,7 +55,8 @@ export class Randomness {
 
     async requestRandomness(
         callbackGasLimit: bigint = this.networkConfig.callbackGasLimitDefault,
-        // gasMultiplier: bigint = this.networkConfig.gasMultiplierDefault, // This variable is not required
+        // This variable is not required. The provider will use current network gas price in calculateRequestPriceNative
+        // gasMultiplier: bigint = this.networkConfig.gasMultiplierDefault, 
         timeoutMs = this.defaultRequestTimeoutMs,
         confirmations = 1
     ): Promise<RandomnessVerificationParameters> {
