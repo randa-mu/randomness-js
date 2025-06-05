@@ -7,5 +7,8 @@ export default {
       useESM: true,
     }],
   },
+  testPathIgnorePatterns: [
+    "<rootDir>/randomness-solidity/lib/chainlink/", // ignore the submodule test files
+  ],
 };
 
