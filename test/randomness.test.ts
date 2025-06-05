@@ -53,7 +53,6 @@ describe("randomness", () => {
         expect(randomness).not.toEqual(null)
         
         const response = await randomness.requestRandomness(100_000n)
-        console.log(response);
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -166,7 +165,6 @@ describe("randomness", () => {
 
     //     const randomness = Randomness.createArbitrumSepolia(wallet)
     //     expect(randomness).not.toEqual(null)
-    //     console.log("randomness requested")
 
     //     const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
     //     expect(await randomness.verify(response)).toBeTruthy()
