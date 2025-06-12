@@ -87,7 +87,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 1_000_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -100,7 +100,7 @@ describe("randomness", () => {
         const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 1_000_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -113,7 +113,7 @@ describe("randomness", () => {
         const randomness = Randomness.createFilecoinCalibnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n, timeoutMs: FILECOIN_TEST_TIMEOUT })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 444_000_000n, timeoutMs: FILECOIN_TEST_TIMEOUT })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
