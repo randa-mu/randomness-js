@@ -1,8 +1,8 @@
 import * as dotenv from "dotenv"
-import {describe, it, expect, beforeAll} from "@jest/globals"
-import {getBytes, JsonRpcProvider, NonceManager, Wallet, WebSocketProvider} from "ethers"
-import {Randomness, RandomnessVerificationParameters} from "../src"
-import {keccak_256} from "@noble/hashes/sha3"
+import { describe, it, expect, beforeAll } from "@jest/globals"
+import { getBytes, JsonRpcProvider, NonceManager, Wallet, WebSocketProvider } from "ethers"
+import { Randomness, RandomnessVerificationParameters } from "../src"
+import { keccak_256 } from "@noble/hashes/sha3"
 
 // filecoin calibnet might take forever
 const TEST_TIMEOUT = 20_000
@@ -51,8 +51,8 @@ describe("randomness", () => {
 
         const randomness = Randomness.createFurnace(wallet)
         expect(randomness).not.toEqual(null)
-        
-        const response = await randomness.requestRandomness(100_000n)
+
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -87,7 +87,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n)
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -100,7 +100,7 @@ describe("randomness", () => {
         const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n)
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -113,7 +113,7 @@ describe("randomness", () => {
         const randomness = Randomness.createFilecoinCalibnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(100_000n)
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n, timeoutMs: FILECOIN_TEST_TIMEOUT })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -126,7 +126,7 @@ describe("randomness", () => {
     //     const randomness = Randomness.createFilecoinMainnet(wallet)
     //     expect(randomness).not.toEqual(null)
     //
-    //     const response = await randomness.requestRandomness(100_000n)
+    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
     //     expect(await randomness.verify(response)).toBeTruthy()
     //
     //     rpc.destroy()
@@ -139,7 +139,7 @@ describe("randomness", () => {
     //     const randomness = Randomness.createAvalancheCChain(wallet)
     //     expect(randomness).not.toEqual(null)
     //
-    //     const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
     //     expect(await randomness.verify(response)).toBeTruthy()
     //
     //     rpc.destroy()
@@ -152,7 +152,7 @@ describe("randomness", () => {
     //     const randomness = Randomness.createOptimismSepolia(wallet)
     //     expect(randomness).not.toEqual(null)
     //
-    //     const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
     //     expect(await randomness.verify(response)).toBeTruthy()
     //
     //     rpc.destroy()
@@ -165,7 +165,7 @@ describe("randomness", () => {
     //     const randomness = Randomness.createArbitrumSepolia(wallet)
     //     expect(randomness).not.toEqual(null)
     //
-    //     const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
     //     expect(await randomness.verify(response)).toBeTruthy()
     //
     //     rpc.destroy()
@@ -187,7 +187,7 @@ describe("randomness", () => {
 
 function createProvider(url: string): JsonRpcProvider | WebSocketProvider {
     if (url.startsWith("http")) {
-        return new JsonRpcProvider(url, undefined, {pollingInterval: 1000})
+        return new JsonRpcProvider(url, undefined, { pollingInterval: 1000 })
     }
     if (url.startsWith("ws")) {
         return new WebSocketProvider(url)

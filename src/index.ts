@@ -35,8 +35,15 @@ export type RandomnessVerificationConfig = {
     shouldBlowUp: boolean // determines whether the verification function silently returns a boolean on failure or explodes
 }
 
+type RequestRandomnessParams = {
+    callbackGasLimit: bigint
+    timeoutMs: number
+    confirmations: number
+}
+
 export class Randomness {
     private readonly contract: RandomnessSender
+    private readonly defaultRequestParams: RequestRandomnessParams
 
     constructor(
         private readonly rpc: Signer | Provider,
@@ -45,6 +52,11 @@ export class Randomness {
     ) {
         console.log(`created randomness-js client with address ${this.networkConfig.contractAddress}`)
         this.contract = RandomnessSender__factory.connect(this.networkConfig.contractAddress, rpc)
+        this.defaultRequestParams = {
+            callbackGasLimit: networkConfig.callbackGasLimitDefault,
+            timeoutMs: defaultRequestTimeoutMs,
+            confirmations: 1,
+        }
     }
 
     // you can create a client from the chainID or use the static methods per chain at the bottom
@@ -52,24 +64,20 @@ export class Randomness {
         return new Randomness(rpc, configForChainId(chainId))
     }
 
-    async requestRandomness(
-        callbackGasLimit: bigint = this.networkConfig.callbackGasLimitDefault,
-        // This variable is not required. The provider will use current network gas price in calculateRequestPriceNative
-        // gasMultiplier: bigint = this.networkConfig.gasMultiplierDefault, 
-        timeoutMs = this.defaultRequestTimeoutMs,
-        confirmations = 1
-    ): Promise<RandomnessVerificationParameters> {
+    async requestRandomness(config: Partial<RequestRandomnessParams> = this.defaultRequestParams): Promise<RandomnessVerificationParameters> {
         if (this.rpc.provider == null) {
             throw Error("RPC requires a provider to request randomness")
         }
+
+        const { callbackGasLimit, timeoutMs, confirmations } = { ...this.defaultRequestParams, ...config }
         // 1. Get request price for randomness request
         const feeData = await this.rpc.provider.getFeeData()
-        
+
         const requestPrice = await this.calculateRequestPriceNative(callbackGasLimit);
 
         // 2. Apply buffer e.g. 100% = 2x total
         const valueToSend = requestPrice + (requestPrice * this.networkConfig.gasBufferPercent) / 100n;
-        
+
         // 3. Send randomness request
         const estimatedGas = await this.contract.requestRandomness.estimateGas(
             callbackGasLimit,
@@ -87,14 +95,14 @@ export class Randomness {
             maxFeePerGas: feeData.maxFeePerGas,
             maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
         });
-        
+
         const receipt = await tx.wait(confirmations, timeoutMs)
         if (!receipt) {
             throw Error("no receipt because confirmations were 0")
         }
 
         const [requestID, nonce] = extractSingleLog(iface, receipt, this.networkConfig.contractAddress, iface.getEvent("RandomnessRequested"))
-        
+
         return new Promise((resolve, reject) => {
             // then we have to both check the past and listen to the future for emitted events
             // lest we miss our fulfilled randomness. We set the listeners first... in case
@@ -173,8 +181,7 @@ export class Randomness {
     * @returns The estimated request price
     */
     async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<bigint> {
-        const requestPrice = await this.contract.calculateRequestPriceNative(callbackGasLimit)
-        return requestPrice;
+        return await this.contract.calculateRequestPriceNative(callbackGasLimit)
     }
 
     static createFilecoinMainnet(rpc: Signer | Provider): Randomness {
