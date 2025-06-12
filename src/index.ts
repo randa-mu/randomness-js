@@ -21,8 +21,17 @@ import {
     FURNACE,
     POLYGON_POS, DCIPHER_PUBLIC_KEY, AVALANCHE_C_CHAIN, OPTIMISM_SEPOLIA, ARBITRUM_SEPOLIA, SEI_TESTNET
 } from "./networks"
+import { getGasPrice } from "./gas"
 
 const iface = RandomnessSender__factory.createInterface()
+
+// Common utils
+const NETWORK_IDS = {
+    FILECOIN_MAINNET: 314,
+    FILECOIN_TESTNET: 314159,
+}
+
+const isFilecoin = (networkId: any) => [NETWORK_IDS.FILECOIN_MAINNET, NETWORK_IDS.FILECOIN_TESTNET].includes(networkId)
 
 export type RandomnessVerificationParameters = {
     requestID: bigint,
@@ -70,35 +79,65 @@ export class Randomness {
         }
 
         const { callbackGasLimit, timeoutMs, confirmations } = { ...this.defaultRequestParams, ...config }
-        // 1. Get request price for randomness request
-        const feeData = await this.rpc.provider.getFeeData()
 
-        const requestPrice = await this.calculateRequestPriceNative(callbackGasLimit);
+        // 1. Get chain ID and fee data
+        const [network, feeData] = await Promise.all([
+            this.rpc.provider!.getNetwork(),
+            this.rpc.provider!.getFeeData(),
+        ]);
 
-        // 2. Apply buffer e.g. 100% = 2x total
-        const valueToSend = requestPrice + (requestPrice * this.networkConfig.gasBufferPercent) / 100n;
+        const chainId = network.chainId;
 
-        // 3. Send randomness request
+        // feeData.gasPrice: Legacy flat gas price (used on non-EIP-1559 chains like Filecoin or older EVMs)
+        // const gasPrice = feeData.gasPrice!;
+
+        // feeData.maxFeePerGas: Max total gas price we're willing to pay (base + priority), used in EIP-1559
+        const maxFeePerGas = feeData.maxFeePerGas!;
+
+        // feeData.maxPriorityFeePerGas: Tip to incentivize validators (goes directly to them)
+        const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas!;
+
+        // latestblock.baseFeePerGas: Minimum gas price required by the network (burned), set by latest block
+        // const latestBlock = await this.signer.provider!.getBlock("latest");
+        // const baseFeePerGas = latestBlock!.baseFeePerGas; // BigNumber (v5) or bigint (v6)
+
+        // 2. Use EIP-1559 pricing
+        let txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
+
+        // 3. Estimate request price using the selected txGasPrice
+        const requestPrice = await this.contract.estimateRequestPriceNative(
+            callbackGasLimit,
+            txGasPrice
+        );
+
+        // 4. Apply buffer (e.g. 100% = 2× total)
+        const bufferPercent = isFilecoin(chainId) ? 300n : 20n;
+        const valueToSend = requestPrice + (requestPrice * bufferPercent) / 100n;
+
+        // 5. Estimate gas
         const estimatedGas = await this.contract.requestRandomness.estimateGas(
             callbackGasLimit,
             {
-                value: requestPrice,
-                maxFeePerGas: feeData.maxFeePerGas,
-                maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-                gasLimit: this.networkConfig.gasLimit,
+                value: valueToSend,
+                maxFeePerGas,
+                maxPriorityFeePerGas,
             }
         );
 
-        const tx = await this.contract.requestRandomness(callbackGasLimit, {
-            value: valueToSend,
-            gasLimit: estimatedGas,
-            maxFeePerGas: feeData.maxFeePerGas,
-            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-        });
+        // 6. Send transaction
+        const tx = await this.contract.requestRandomness(
+            callbackGasLimit,
+            {
+                value: valueToSend,
+                gasLimit: estimatedGas,
+                maxFeePerGas,
+                maxPriorityFeePerGas,
+            }
+        );
 
-        const receipt = await tx.wait(confirmations, timeoutMs)
+        const receipt = await tx.wait();
         if (!receipt) {
-            throw Error("no receipt because confirmations were 0")
+            throw new Error("Transaction was not mined");
         }
 
         const [requestID, nonce] = extractSingleLog(iface, receipt, this.networkConfig.contractAddress, iface.getEvent("RandomnessRequested"))

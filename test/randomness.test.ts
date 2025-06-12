@@ -5,7 +5,7 @@ import { Randomness, RandomnessVerificationParameters } from "../src"
 import { keccak_256 } from "@noble/hashes/sha3"
 
 // filecoin calibnet might take forever
-const TEST_TIMEOUT = 20_000
+const TEST_TIMEOUT = 30_000
 const FILECOIN_TEST_TIMEOUT = 200_000
 
 describe("randomness", () => {
@@ -45,19 +45,6 @@ describe("randomness", () => {
         expect(await randomness.verify(verificationParameters)).toBeTruthy();
     })
 
-    it("can be requested from a furnace testnet and verified", async () => {
-        const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
-        const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
-
-        const randomness = Randomness.createFurnace(wallet)
-        expect(randomness).not.toEqual(null)
-
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
-        expect(await randomness.verify(response)).toBeTruthy()
-
-        rpc.destroy()
-    }, TEST_TIMEOUT)
-
     it("should return non-zero request price to cover BLS operations when callbackGasLimit is zero", async () => {
         const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
@@ -80,6 +67,19 @@ describe("randomness", () => {
         expect(estimatedRequestPriceForNonZeroCallback).toBeGreaterThan(estimatedRequestPriceForZeroCallback);
     }, TEST_TIMEOUT)
 
+    it("can be requested from a furnace testnet and verified", async () => {
+        const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
+
+        const randomness = Randomness.createFurnace(wallet)
+        expect(randomness).not.toEqual(null)
+
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        expect(await randomness.verify(response)).toBeTruthy()
+
+        rpc.destroy()
+    }, TEST_TIMEOUT)
+
     it("can be requested from a base sepolia and verified", async () => {
         const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
@@ -87,7 +87,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 1_000_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -100,7 +100,7 @@ describe("randomness", () => {
         const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 1_000_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()

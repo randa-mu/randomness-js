@@ -92,7 +92,7 @@ export const POLYGON_POS: NetworkConfig = {
     gasLimit: 100_000,
     maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
     maxPriorityFeePerGas: ethers.parseUnits("0.2", "gwei"),
-    gasBufferPercent: 100n,
+    gasBufferPercent: 300n,
     callbackGasLimitDefault: 1_000_000n,
     gasMultiplierDefault: 10n,
 }
