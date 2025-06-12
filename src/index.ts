@@ -21,7 +21,6 @@ import {
     FURNACE,
     POLYGON_POS, DCIPHER_PUBLIC_KEY, AVALANCHE_C_CHAIN, OPTIMISM_SEPOLIA, ARBITRUM_SEPOLIA, SEI_TESTNET
 } from "./networks"
-import { getGasPrice } from "./gas"
 
 const iface = RandomnessSender__factory.createInterface()
 
