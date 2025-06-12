@@ -87,7 +87,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness(100_000n)
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
