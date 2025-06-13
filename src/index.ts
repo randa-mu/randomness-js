@@ -30,7 +30,7 @@ const NETWORK_IDS = {
     FILECOIN_TESTNET: 314159,
 }
 
-const isFilecoin = (networkId: any) => [NETWORK_IDS.FILECOIN_MAINNET, NETWORK_IDS.FILECOIN_TESTNET].includes(networkId)
+const isFilecoin = (networkId: number) => [NETWORK_IDS.FILECOIN_MAINNET, NETWORK_IDS.FILECOIN_TESTNET].includes(networkId)
 
 export type RandomnessVerificationParameters = {
     requestID: bigint,
@@ -77,7 +77,7 @@ export class Randomness {
             throw Error("RPC requires a provider to request randomness")
         }
 
-        const { callbackGasLimit, timeoutMs, confirmations } = { ...this.defaultRequestParams, ...config }
+        const { callbackGasLimit, timeoutMs, } = { ...this.defaultRequestParams, ...config }
 
         // 1. Get chain ID and fee data
         const [network, feeData] = await Promise.all([
@@ -101,7 +101,7 @@ export class Randomness {
         // const baseFeePerGas = latestBlock!.baseFeePerGas; // BigNumber (v5) or bigint (v6)
 
         // 2. Use EIP-1559 pricing
-        let txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
+        const txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
 
         // 3. Estimate request price using the selected txGasPrice
         const requestPrice = await this.contract.estimateRequestPriceNative(
@@ -110,7 +110,7 @@ export class Randomness {
         );
 
         // 4. Apply buffer (e.g. 100% = 2× total)
-        const bufferPercent = isFilecoin(chainId) ? 300n : 20n;
+        const bufferPercent = isFilecoin(Number(chainId)) ? 300n : 20n;
         const valueToSend = requestPrice + (requestPrice * bufferPercent) / 100n;
 
         // 5. Estimate gas
