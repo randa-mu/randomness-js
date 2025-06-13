@@ -110,7 +110,7 @@ export class Randomness {
         );
 
         // 4. Apply buffer (e.g. 100% = 2× total)
-        const bufferPercent = isFilecoin(Number(chainId)) ? 300n : 20n;
+        const bufferPercent = isFilecoin(Number(chainId)) ? 300n : 50n;
         const valueToSend = requestPrice + (requestPrice * bufferPercent) / 100n;
 
         // 5. Estimate gas
