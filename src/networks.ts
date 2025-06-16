@@ -1,22 +1,6 @@
 import {bn254} from "@kevincharm/noble-bn254-drand"
 import {ethers} from "ethers"
 
-// any human who can find the right hex format to parse this point shall be crowned the [king|queen|catgirl] of England
-// This public key is deprecated and not used in the Randomness contracts with user billing
-// Left here for backup
-// export const DCIPHER_PUBLIC_KEY = new bn254.G2.ProjectivePoint(
-//     {
-//         c0: 17445541620214498517833872661220947475697073327136585274784354247720096233162n,
-//         c1: 18268991875563357240413244408004758684187086817233527689475815128036446189503n
-//     },
-//     {
-//         c0: 11401601170172090472795479479864222172123705188644469125048759621824127399516n,
-//         c1: 8044854403167346152897273335539146380878155193886184396711544300199836788154n
-//     },
-//     {
-//         c0: 1n, c1: 0n
-//     }
-// )
 export const DCIPHER_PUBLIC_KEY = new bn254.G2.ProjectivePoint(
     {
         c0: 19466273993852079063924474392378816199685375459664529508122564849204533666468n,

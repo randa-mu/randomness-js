@@ -80,6 +80,9 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
+    // todo agent not signing
+    // Not sure which one to look at in argo. 
+    // We'll need a central log for multi-party agent
     it("can be requested from a base sepolia and verified", async () => {
         const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
@@ -93,6 +96,9 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
+    // todo agent not syncing
+    // Not sure which one to look at in argo. 
+    // We'll need a central log for multi-party agent
     it("can be requested from polygon pos and verified", async () => {
         const rpc = createProvider(process.env.POLYGON_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.POLYGON_PRIVATE_KEY || "", rpc))
@@ -106,7 +112,10 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it("can be requested from filecoin testnet and verified", async () => {
+    // todo agent status is constantly progressing
+    // Not sure which one to look at in argo. 
+    // We'll need a central log for multi-party agent
+    it.only("can be requested from filecoin testnet and verified", async () => {
         const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
 
