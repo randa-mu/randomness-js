@@ -87,18 +87,11 @@ export class Randomness {
 
         const chainId = network.chainId;
 
-        // feeData.gasPrice: Legacy flat gas price (used on non-EIP-1559 chains like Filecoin or older EVMs)
-        // const gasPrice = feeData.gasPrice!;
-
         // feeData.maxFeePerGas: Max total gas price we're willing to pay (base + priority), used in EIP-1559
         const maxFeePerGas = feeData.maxFeePerGas!;
 
         // feeData.maxPriorityFeePerGas: Tip to incentivize validators (goes directly to them)
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas!;
-
-        // latestblock.baseFeePerGas: Minimum gas price required by the network (burned), set by latest block
-        // const latestBlock = await this.signer.provider!.getBlock("latest");
-        // const baseFeePerGas = latestBlock!.baseFeePerGas; // BigNumber (v5) or bigint (v6)
 
         // 2. Use EIP-1559 pricing
         const txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
@@ -118,8 +111,7 @@ export class Randomness {
             callbackGasLimit,
             {
                 value: valueToSend,
-                maxFeePerGas,
-                maxPriorityFeePerGas,
+                gasPrice: txGasPrice,
             }
         );
 
@@ -129,8 +121,7 @@ export class Randomness {
             {
                 value: valueToSend,
                 gasLimit: estimatedGas,
-                maxFeePerGas,
-                maxPriorityFeePerGas,
+                gasPrice: txGasPrice,
             }
         );
 
@@ -214,12 +205,41 @@ export class Randomness {
 
 
     /**
-    * Calculates the request price for a blocklock request given the callbackGasLimit.
-    * @param callbackGasLimit The callbackGasLimit to use when fulfilling the request with a decryption key.
-    * @returns The estimated request price
-    */
-    async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<bigint> {
-        return await this.contract.calculateRequestPriceNative(callbackGasLimit)
+     * Calculates the request price for a blocklock request given the callbackGasLimit.
+     * @param callbackGasLimit The callbackGasLimit to use when fulfilling the request with a decryption key.
+     * @returns The estimated request price and the transaction gas price used
+     */
+    async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<[bigint,bigint]> {
+        if (this.rpc.provider == null) {
+            throw Error("RPC requires a provider to request randomness")
+        }
+
+        // 1. Get chain ID and fee data
+        const [network, feeData] = await Promise.all([
+            this.rpc.provider!.getNetwork(),
+            this.rpc.provider!.getFeeData(),
+        ]);
+
+        const chainId = network.chainId;
+
+        const maxFeePerGas = feeData.maxFeePerGas!;
+
+        const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas!;
+
+        // 2. Use EIP-1559 pricing
+        const txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
+
+        // 3. Estimate request price using the selected txGasPrice
+        const requestPrice = await this.contract.estimateRequestPriceNative(
+            callbackGasLimit,
+            txGasPrice
+        );
+
+        // 4. Apply buffer (e.g. 100% = 2× total)
+        const bufferPercent = isFilecoin(Number(chainId)) ? 300n : 100n;
+        const valueToSend = requestPrice + (requestPrice * bufferPercent) / 100n;
+
+        return [valueToSend, txGasPrice];
     }
 
     static createFilecoinMainnet(rpc: Signer | Provider): Randomness {
