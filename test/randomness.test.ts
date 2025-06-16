@@ -46,13 +46,13 @@ describe("randomness", () => {
     })
 
     it("should return non-zero request price to cover BLS operations when callbackGasLimit is zero", async () => {
-        const rpc = createProvider(process.env.FILECOIN_MAINNET_RPC_URL || "")
-        const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
-        const randomness = Randomness.createFilecoinMainnet(wallet)
+        const rpc = createProvider(process.env.BASE_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
+        const randomness = Randomness.createBaseSepolia(wallet)
         const callbackGasLimit = 0n;
         const [estimatedRequestPrice, ] = await randomness.calculateRequestPriceNative(callbackGasLimit);
         expect(estimatedRequestPrice).toBeGreaterThan(0n);
-    }, FILECOIN_TEST_TIMEOUT)
+    }, TEST_TIMEOUT)
 
     it("can be requested from a furnace testnet and verified", async () => {
         const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
