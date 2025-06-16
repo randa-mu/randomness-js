@@ -1,7 +1,8 @@
 import {describe, it, expect} from "@jest/globals"
-import {createBlsDst} from "../src/index"
+import {createBlsDst} from "./dst-helper"
 
-describe("creating a BLS DST", () => {
+// You can use these tests to generate valid DSTs for new networks
+describe.skip("creating a BLS DST", () => {
     it("should blow up on 0 chainID", () => {
         expect(() => createBlsDst(0n)).toThrowError()
     })

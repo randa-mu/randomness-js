@@ -34,7 +34,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint src",
     "lint:fix": "eslint --fix",
-    "test": "jest ./test/*.test.ts"
+    "test": "jest ./test/*.test.ts --forceExit"
   },
   "keywords": [
     "dcrypt",
