@@ -13,7 +13,7 @@ describe("randomness", () => {
         dotenv.config()
     })
 
-    it.skip("nonsense input shouldn't verify", async () => {
+    it("nonsense input shouldn't verify", async () => {
         const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
         const randomnessClient = Randomness.createFurnace(wallet)
@@ -31,7 +31,7 @@ describe("randomness", () => {
         expect(result).toBeFalsy()
     })
 
-    it.skip("should verify if randomness and signature are created with the correct DCIPHER_PUBLIC_KEY", async () => {
+    it("should verify if randomness and signature are created with the correct DCIPHER_PUBLIC_KEY", async () => {
         const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
 
@@ -45,7 +45,7 @@ describe("randomness", () => {
         expect(await randomness.verify(verificationParameters)).toBeTruthy();
     })
 
-    it.skip("should return non-zero request price to cover BLS operations when callbackGasLimit is zero", async () => {
+    it("should return non-zero request price to cover BLS operations when callbackGasLimit is zero", async () => {
         const rpc = createProvider(process.env.FILECOIN_MAINNET_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
         const randomness = Randomness.createFilecoinMainnet(wallet)
@@ -54,7 +54,7 @@ describe("randomness", () => {
         expect(estimatedRequestPrice).toBeGreaterThan(0n);
     }, FILECOIN_TEST_TIMEOUT)
 
-    it.skip("can be requested from a furnace testnet and verified", async () => {
+    it("can be requested from a furnace testnet and verified", async () => {
         const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
 
@@ -67,7 +67,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it.skip("can be requested from a base sepolia and verified", async () => {
+    it("can be requested from a base sepolia and verified", async () => {
         const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
 
@@ -80,7 +80,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it.skip("can be requested from polygon pos and verified", async () => {
+    it("can be requested from polygon pos and verified", async () => {
         const rpc = createProvider(process.env.POLYGON_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.POLYGON_PRIVATE_KEY || "", rpc))
 
