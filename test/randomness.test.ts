@@ -107,7 +107,7 @@ describe("randomness", () => {
     }, FILECOIN_TEST_TIMEOUT)
 
     it("can be requested from filecoin mainnet and verified", async () => {
-        const rpc = createProvider(process.env.FILECOIN_MAINNET_URL || "")
+        const rpc = createProvider(process.env.FILECOIN_MAINNET_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
 
         const randomness = Randomness.createFilecoinMainnet(wallet)
