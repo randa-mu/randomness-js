@@ -56,7 +56,7 @@ export class Randomness {
     constructor(
         private readonly rpc: Signer | Provider,
         private readonly networkConfig: NetworkConfig,
-        private readonly defaultRequestTimeoutMs: number = 60_000,
+        defaultRequestTimeoutMs: number = 60_000,
     ) {
         console.log(`created randomness-js client with address ${this.networkConfig.contractAddress}`)
         this.contract = RandomnessSender__factory.connect(this.networkConfig.contractAddress, rpc)
