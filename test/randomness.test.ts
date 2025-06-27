@@ -109,7 +109,7 @@ describe("randomness", () => {
     it("can be requested from filecoin mainnet and verified", async () => {
         const rpc = createProvider(process.env.FILECOIN_MAINNET_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
-    
+
         const randomness = Randomness.createFilecoinMainnet(wallet)
         expect(randomness).not.toEqual(null)
     
@@ -119,57 +119,57 @@ describe("randomness", () => {
         rpc.destroy()
     }, FILECOIN_TEST_TIMEOUT)
 
-    // it("can be requested from avalanche c chain and verified", async () => {
-    //     const rpc = createProvider(process.env.AVALANCHE_C_CHAIN_RPC_URL || "")
-    //     const wallet = new NonceManager(new Wallet(process.env.AVALANCHE_PRIVATE_KEY || "", rpc))
-    //
-    //     const randomness = Randomness.createAvalancheCChain(wallet)
-    //     expect(randomness).not.toEqual(null)
-    //
-    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
-    //     expect(await randomness.verify(response)).toBeTruthy()
-    //
-    //     rpc.destroy()
-    // }, TEST_TIMEOUT)
+    it("can be requested from avalanche c chain and verified", async () => {
+        const rpc = createProvider(process.env.AVALANCHE_C_CHAIN_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.AVALANCHE_PRIVATE_KEY || "", rpc))
 
-    // it("can be requested from optimism sepolia and verified", async () => {
-    //     const rpc = createProvider(process.env.OPTIMISM_SEPOLIA_RPC_URL || "")
-    //     const wallet = new NonceManager(new Wallet(process.env.OPTIMISM_SEPOLIA_PRIVATE_KEY || "", rpc))
-    //
-    //     const randomness = Randomness.createOptimismSepolia(wallet)
-    //     expect(randomness).not.toEqual(null)
-    //
-    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
-    //     expect(await randomness.verify(response)).toBeTruthy()
-    //
-    //     rpc.destroy()
-    // }, TEST_TIMEOUT)
-    // it("can be requested from arbitrum sepolia and verified", async () => {
+        const randomness = Randomness.createAvalancheCChain(wallet)
+        expect(randomness).not.toEqual(null)
 
-    //     const rpc = createProvider(process.env.ARBITRUM_SEPOLIA_RPC_URL || "")
-    //     const wallet = new NonceManager(new Wallet(process.env.ARBITRUM_SEPOLIA_PRIVATE_KEY || "", rpc))
-    //
-    //     const randomness = Randomness.createArbitrumSepolia(wallet)
-    //     expect(randomness).not.toEqual(null)
-    //
-    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
-    //     expect(await randomness.verify(response)).toBeTruthy()
-    //
-    //     rpc.destroy()
-    // }, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
+        expect(await randomness.verify(response)).toBeTruthy()
 
-    // it("can be requested from sei testnet and verified", async () => {
-    //     const rpc = createProvider(process.env.SEI_TESTNET_RPC_URL || "")
-    //     const wallet = new NonceManager(new Wallet(process.env.SEI_TESTNET_PRIVATE_KEY || "", rpc))
-    //
-    //     const randomness = Randomness.createSeiTestnet(wallet)
-    //     expect(randomness).not.toEqual(null)
-    //
-    //     const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
-    //     expect(await randomness.verify(response)).toBeTruthy()
-    //
-    //     rpc.destroy()
-    // }, TEST_TIMEOUT)
+        rpc.destroy()
+    }, TEST_TIMEOUT)
+
+    it("can be requested from optimism sepolia and verified", async () => {
+        const rpc = createProvider(process.env.OPTIMISM_SEPOLIA_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.OPTIMISM_SEPOLIA_PRIVATE_KEY || "", rpc))
+
+        const randomness = Randomness.createOptimismSepolia(wallet)
+        expect(randomness).not.toEqual(null)
+
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
+        expect(await randomness.verify(response)).toBeTruthy()
+
+        rpc.destroy()
+    }, TEST_TIMEOUT)
+    it("can be requested from arbitrum sepolia and verified", async () => {
+
+        const rpc = createProvider(process.env.ARBITRUM_SEPOLIA_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.ARBITRUM_SEPOLIA_PRIVATE_KEY || "", rpc))
+
+        const randomness = Randomness.createArbitrumSepolia(wallet)
+        expect(randomness).not.toEqual(null)
+
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
+        expect(await randomness.verify(response)).toBeTruthy()
+
+        rpc.destroy()
+    }, TEST_TIMEOUT)
+
+    it("can be requested from sei testnet and verified", async () => {
+        const rpc = createProvider(process.env.SEI_TESTNET_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.SEI_TESTNET_PRIVATE_KEY || "", rpc))
+
+        const randomness = Randomness.createSeiTestnet(wallet)
+        expect(randomness).not.toEqual(null)
+
+        const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+        expect(await randomness.verify(response)).toBeTruthy()
+
+        rpc.destroy()
+    }, TEST_TIMEOUT)
 })
 
 function createProvider(url: string): JsonRpcProvider | WebSocketProvider {
