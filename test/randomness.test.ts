@@ -126,7 +126,7 @@ describe("randomness", () => {
         const randomness = Randomness.createAvalancheCChain(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness({ confirmations: 1, timeoutMs: TEST_TIMEOUT, callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -139,7 +139,7 @@ describe("randomness", () => {
         const randomness = Randomness.createOptimismSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness({ confirmations: 1, timeoutMs: TEST_TIMEOUT, callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -152,7 +152,7 @@ describe("randomness", () => {
         const randomness = Randomness.createArbitrumSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n }, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness({ confirmations: 1, timeoutMs: TEST_TIMEOUT, callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -165,7 +165,7 @@ describe("randomness", () => {
         const randomness = Randomness.createSeiTestnet(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness(1, TEST_TIMEOUT)
+        const response = await randomness.requestRandomness({ confirmations: 1, timeoutMs: TEST_TIMEOUT, callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
