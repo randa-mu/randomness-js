@@ -93,31 +93,31 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    // it.only("can be requested from filecoin testnet and verified", async () => {
-    //     const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
-    //     const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
+    it("can be requested from filecoin testnet and verified", async () => {
+        const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
 
-    //     const randomness = Randomness.createFilecoinCalibnet(wallet)
-    //     expect(randomness).not.toEqual(null)
+        const randomness = Randomness.createFilecoinCalibnet(wallet)
+        expect(randomness).not.toEqual(null)
 
-    //     const response = await randomness.requestRandomness({ callbackGasLimit: 444_000_000n, timeoutMs: FILECOIN_TEST_TIMEOUT })
-    //     expect(await randomness.verify(response)).toBeTruthy()
+        const response = await randomness.requestRandomness({ callbackGasLimit: 444_000_000n, timeoutMs: FILECOIN_TEST_TIMEOUT })
+        expect(await randomness.verify(response)).toBeTruthy()
 
-    //     rpc.destroy()
-    // }, FILECOIN_TEST_TIMEOUT)
+        rpc.destroy()
+    }, FILECOIN_TEST_TIMEOUT)
 
-    // it("can be requested from filecoin mainnet and verified", async () => {
-    //     const rpc = createProvider(process.env.FILECOIN_MAINNET_URL || "")
-    //     const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
+    it("can be requested from filecoin mainnet and verified", async () => {
+        const rpc = createProvider(process.env.FILECOIN_MAINNET_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
     
-    //     const randomness = Randomness.createFilecoinMainnet(wallet)
-    //     expect(randomness).not.toEqual(null)
+        const randomness = Randomness.createFilecoinMainnet(wallet)
+        expect(randomness).not.toEqual(null)
     
-    //     const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
-    //     expect(await randomness.verify(response)).toBeTruthy()
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        expect(await randomness.verify(response)).toBeTruthy()
     
-    //     rpc.destroy()
-    // }, FILECOIN_TEST_TIMEOUT)
+        rpc.destroy()
+    }, FILECOIN_TEST_TIMEOUT)
 
     // it("can be requested from avalanche c chain and verified", async () => {
     //     const rpc = createProvider(process.env.AVALANCHE_C_CHAIN_RPC_URL || "")
