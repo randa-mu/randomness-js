@@ -106,7 +106,8 @@ describe("randomness", () => {
         rpc.destroy()
     }, FILECOIN_TEST_TIMEOUT)
 
-    it("can be requested from filecoin mainnet and verified", async () => {
+    // skipped because it needs real funds
+    it.skip("can be requested from filecoin mainnet and verified", async () => {
         const rpc = createProvider(process.env.FILECOIN_MAINNET_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_MAINNET_PRIVATE_KEY || "", rpc))
 
@@ -119,9 +120,10 @@ describe("randomness", () => {
         rpc.destroy()
     }, FILECOIN_TEST_TIMEOUT)
 
-    it("can be requested from avalanche c chain and verified", async () => {
+    // skipped because it needs real funds
+    it.skip("can be requested from avalanche c chain and verified", async () => {
         const rpc = createProvider(process.env.AVALANCHE_C_CHAIN_RPC_URL || "")
-        const wallet = new NonceManager(new Wallet(process.env.AVALANCHE_PRIVATE_KEY || "", rpc))
+        const wallet = new NonceManager(new Wallet(process.env.AVALANCHE_C_CHAIN_PRIVATE_KEY || "", rpc))
 
         const randomness = Randomness.createAvalancheCChain(wallet)
         expect(randomness).not.toEqual(null)
