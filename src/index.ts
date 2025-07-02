@@ -9,9 +9,7 @@ import {
 import { bn254 } from "@kevincharm/noble-bn254-drand"
 import { equalBytes } from "@noble/curves/abstract/utils"
 import { encodeParams, extractSingleLog } from "./ethers-helpers"
-import { RandomnessSender__factory } from "./generated"
-import { TypedContractEvent, TypedListener } from "./generated/common"
-import { RandomnessCallbackSuccessEvent, RandomnessSender } from "./generated/RandomnessSender"
+import { RandomnessSender__factory, RandomnessSender } from "./generated"
 import {
     NetworkConfig,
     configForChainId,
@@ -47,6 +45,7 @@ type RequestRandomnessParams = {
     callbackGasLimit: bigint
     timeoutMs: number
     confirmations: number
+    pollingIntervalMs: number
 }
 
 export class Randomness {
@@ -64,6 +63,7 @@ export class Randomness {
             callbackGasLimit: networkConfig.callbackGasLimitDefault,
             timeoutMs: defaultRequestTimeoutMs,
             confirmations: 1,
+            pollingIntervalMs: 500,
         }
     }
 
@@ -130,41 +130,18 @@ export class Randomness {
             throw new Error("Transaction was not mined");
         }
 
-        const [requestID, nonce] = extractSingleLog(iface, receipt, this.networkConfig.contractAddress, iface.getEvent("RandomnessRequested"))
+        const [requestID] = extractSingleLog(iface, receipt, this.networkConfig.contractAddress, iface.getEvent("RandomnessRequested"))
+        const start = Date.now()
+        while (Date.now() - start < timeoutMs) {
+            const [, , , , , , signature, nonce] = await this.contract.getRequest(requestID)
 
-        return new Promise((resolve, reject) => {
-            // then we have to both check the past and listen to the future for emitted events
-            // lest we miss our fulfilled randomness. We set the listeners first... in case
-            // by some magic our request is fulfilled _between_ the lines
-            const successFilter = this.contract.filters.RandomnessCallbackSuccess(requestID)
-
-            // how many blocks we're willing to look back - don't really expect it to be more than 1
-            const blockLookBack = 3
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let timeout: any = null
-
-            // cleanup to do once we've managed all the events
-            const cleanup = () => {
-                this.contract.off(successFilter)
-                clearTimeout(timeout)
+            if (signature !== "0x") {
+                return { requestID, randomness: keccak256(signature), nonce, signature }
             }
-            const randomnessCallback = (result: RandomnessVerificationParameters) => {
-                resolve(result)
-                cleanup()
-            }
-            const randomnessListener = createRandomnessListener(nonce, randomnessCallback)
-            this.contract.once(successFilter, randomnessListener)
+            await sleep(config.pollingIntervalMs ?? 500)
+        }
 
-            const randomnessFilter = createRandomnessLogListener(nonce, randomnessCallback)
-            this.contract.queryFilter(successFilter, -blockLookBack)
-                .then(randomnessFilter)
-                .catch(reject)
-
-            timeout = setTimeout(() => {
-                cleanup()
-                reject(new Error("timed out requesting randomness"))
-            }, timeoutMs)
-        })
+        throw new Error("timed out waiting for randomness request")
     }
 
     async verify(
@@ -209,7 +186,7 @@ export class Randomness {
      * @param callbackGasLimit The callbackGasLimit to use when fulfilling the request with a decryption key.
      * @returns The estimated request price and the transaction gas price used
      */
-    async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<[bigint,bigint]> {
+    async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<[bigint, bigint]> {
         if (this.rpc.provider == null) {
             throw Error("RPC requires a provider to request randomness")
         }
@@ -282,23 +259,6 @@ export class Randomness {
     }
 }
 
-function createRandomnessListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void): TypedListener<TypedContractEvent> {
-    return (log: RandomnessCallbackSuccessEvent.Log) => {
-        const [requestID, randomness, signature] = log.args
-        cb({ requestID, nonce, randomness, signature })
-    }
-}
-
-function createRandomnessLogListener(nonce: bigint, cb: (arg: RandomnessVerificationParameters) => void) {
-    return (logs: RandomnessCallbackSuccessEvent.Log[]) => {
-        if (logs.length === 0) {
-            return
-        }
-        if (!logs[0].args) {
-            console.error("got a log without args somehow...")
-            return
-        }
-        const [requestID, randomness, signature] = logs[0].args
-        cb({ requestID, randomness, signature, nonce })
-    }
+async function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }

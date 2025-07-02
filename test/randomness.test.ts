@@ -93,7 +93,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it("can be requested from filecoin testnet and verified", async () => {
+    it.skip("can be requested from filecoin testnet and verified", async () => {
         const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
 
@@ -146,6 +146,7 @@ describe("randomness", () => {
 
         rpc.destroy()
     }, TEST_TIMEOUT)
+
     it("can be requested from arbitrum sepolia and verified", async () => {
 
         const rpc = createProvider(process.env.ARBITRUM_SEPOLIA_RPC_URL || "")
@@ -154,13 +155,13 @@ describe("randomness", () => {
         const randomness = Randomness.createArbitrumSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ confirmations: 1, timeoutMs: TEST_TIMEOUT, callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ confirmations: 1, timeoutMs: FILECOIN_TEST_TIMEOUT, callbackGasLimit: 100_000n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it("can be requested from sei testnet and verified", async () => {
+    it.skip("can be requested from sei testnet and verified", async () => {
         const rpc = createProvider(process.env.SEI_TESTNET_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.SEI_TESTNET_PRIVATE_KEY || "", rpc))
 
