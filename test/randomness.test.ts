@@ -93,7 +93,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it.skip("can be requested from filecoin testnet and verified", async () => {
+    it("can be requested from filecoin testnet and verified", async () => {
         const rpc = createProvider(process.env.FILECOIN_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.FILECOIN_PRIVATE_KEY || "", rpc))
 
@@ -161,7 +161,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it.skip("can be requested from sei testnet and verified", async () => {
+    it("can be requested from sei testnet and verified", async () => {
         const rpc = createProvider(process.env.SEI_TESTNET_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.SEI_TESTNET_PRIVATE_KEY || "", rpc))
 
