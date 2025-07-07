@@ -68,7 +68,7 @@ describe("randomness", () => {
     }, TEST_TIMEOUT)
 
     it("can be requested from a base sepolia and verified", async () => {
-        const rpc = createProvider(process.env.BASE_RPC_URL || "")
+        const rpc = createProvider("http://localhost:1337")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
 
         const randomness = Randomness.createBaseSepolia(wallet)

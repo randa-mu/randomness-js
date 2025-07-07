@@ -229,10 +229,6 @@ export class Randomness {
         return new Randomness(rpc, FILECOIN_CALIBNET, 90_000)
     }
 
-    static createFurnace(rpc: Signer | Provider): Randomness {
-        return new Randomness(rpc, FURNACE)
-    }
-
     static createBaseSepolia(rpc: Signer | Provider): Randomness {
         return new Randomness(rpc, BASE_SEPOLIA)
     }
