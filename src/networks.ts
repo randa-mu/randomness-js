@@ -57,7 +57,7 @@ export const FILECOIN_MAINNET: NetworkConfig = {
 
 export const BASE_SEPOLIA: NetworkConfig = {
     name: "base_sepolia",
-    chainId: 31337n,
+    chainId: 84532n,
     contractAddress: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x0000000000000000000000000000000000000000000000000000000000014a34_",
     gasLimit: 100_000,
