@@ -14,9 +14,9 @@ describe("randomness", () => {
     })
 
     it("nonsense input shouldn't verify", async () => {
-        const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
-        const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
-        const randomnessClient = Randomness.createFurnace(wallet)
+        const rpc = createProvider(process.env.BASE_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
+        const randomnessClient = Randomness.createBaseSepolia(wallet)
 
         const signature = "0xdeadbeefdeadbeefdeadbeefdeadbeefdead"
         const randomness = keccak_256(getBytes(signature))
@@ -31,20 +31,6 @@ describe("randomness", () => {
         expect(result).toBeFalsy()
     })
 
-    it("should verify if randomness and signature are created with the correct DCIPHER_PUBLIC_KEY", async () => {
-        const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
-        const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
-
-        const randomness = Randomness.createFurnace(wallet)
-        const verificationParameters: RandomnessVerificationParameters = {
-            requestID: 25n,
-            nonce: 25n,
-            randomness: '0x346009d2228e596c5876e466a172dcb953e79a6fe884f2ebcd7cce7089fc1e2e',
-            signature: '0x11d68386b988522ac91c29e2e65a97e75f45bedd62f1ae568d410658f4d108940aff191aea3b97b5f2f1de0d03c577fcf21743c8ba14218159ea1e0597c8ab60'
-        }
-        expect(await randomness.verify(verificationParameters)).toBeTruthy();
-    })
-
     it("should return non-zero request price to cover BLS operations when callbackGasLimit is zero", async () => {
         const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
@@ -54,21 +40,8 @@ describe("randomness", () => {
         expect(estimatedRequestPrice).toBeGreaterThan(0n);
     }, TEST_TIMEOUT)
 
-    it("can be requested from a furnace testnet and verified", async () => {
-        const rpc = createProvider(process.env.FURNACE_RPC_URL || "")
-        const wallet = new NonceManager(new Wallet(process.env.FURNACE_PRIVATE_KEY || "", rpc))
-
-        const randomness = Randomness.createFurnace(wallet)
-        expect(randomness).not.toEqual(null)
-
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
-        expect(await randomness.verify(response)).toBeTruthy()
-
-        rpc.destroy()
-    }, TEST_TIMEOUT)
-
     it("can be requested from a base sepolia and verified", async () => {
-        const rpc = createProvider("http://localhost:1337")
+        const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
 
         const randomness = Randomness.createBaseSepolia(wallet)

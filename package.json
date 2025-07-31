@@ -1,6 +1,6 @@
 {
   "name": "randomness-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A library for consuming, verifying and using randomness from the dcipher network",
   "source": "src/index.ts",
   "main": "./dist/cjs/index.cjs",
