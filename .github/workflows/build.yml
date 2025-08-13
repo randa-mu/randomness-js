@@ -48,8 +48,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-#      - name: Test
-#        run: npm run test
+      - name: Test
+        run: npm run test
 
       - name: Publish to npmjs
         uses: JS-DevTools/npm-publish@v1
