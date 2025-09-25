@@ -69,7 +69,7 @@ export const BASE_SEPOLIA: NetworkConfig = {
 }
 
 export const BASE_MAINNET: NetworkConfig = {
-    name: "base_sepolia",
+    name: "base_mainnet",
     chainId: 8453n,
     contractAddress: "0x007cEEc8d8ACa5B0E1f885Ea85077d63b135E651",
     dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x0000000000000000000000000000000000000000000000000000000000002105_",
