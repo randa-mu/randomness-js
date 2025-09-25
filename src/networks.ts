@@ -68,6 +68,19 @@ export const BASE_SEPOLIA: NetworkConfig = {
     gasMultiplierDefault: 10n,
 }
 
+export const BASE_MAINNET: NetworkConfig = {
+    name: "base_sepolia",
+    chainId: 8453n,
+    contractAddress: "0x007cEEc8d8ACa5B0E1f885Ea85077d63b135E651",
+    dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x0000000000000000000000000000000000000000000000000000000000002105_",
+    gasLimit: 100_000,
+    maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
+    maxPriorityFeePerGas: ethers.parseUnits("0.2", "gwei"),
+    gasBufferPercent: 100n,
+    callbackGasLimitDefault: 1_000_000n,
+    gasMultiplierDefault: 10n,
+}
+
 export const POLYGON_POS: NetworkConfig = {
     name: "polygon_pos",
     chainId: 137n,
