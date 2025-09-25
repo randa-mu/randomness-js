@@ -53,6 +53,19 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
+    it.skip("can be requested from a base mainnet and verified", async () => {
+        const rpc = createProvider(process.env.BASE_RPC_URL || "")
+        const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
+
+        const randomness = Randomness.createBaseMainnet(wallet)
+        expect(randomness).not.toEqual(null)
+
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        expect(await randomness.verify(response)).toBeTruthy()
+
+        rpc.destroy()
+    }, TEST_TIMEOUT)
+
     it("can be requested from polygon pos and verified", async () => {
         const rpc = createProvider(process.env.POLYGON_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.POLYGON_PRIVATE_KEY || "", rpc))

@@ -14,6 +14,7 @@ import {
     NetworkConfig,
     configForChainId,
     BASE_SEPOLIA,
+    BASE_MAINNET,
     FILECOIN_CALIBNET,
     FILECOIN_MAINNET,
     POLYGON_POS,
@@ -235,6 +236,10 @@ export class Randomness {
 
     static createBaseSepolia(rpc: Signer | Provider): Randomness {
         return new Randomness(rpc, BASE_SEPOLIA)
+    }
+
+    static createBaseMainnet(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, BASE_MAINNET)
     }
 
     static createPolygonPos(rpc: Signer | Provider): Randomness {
