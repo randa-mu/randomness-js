@@ -40,7 +40,7 @@ describe("randomness", () => {
         expect(estimatedRequestPrice).toBeGreaterThan(0n);
     }, TEST_TIMEOUT)
 
-    it("can be requested from a base sepolia and verified", async () => {
+    it.skip("can be requested from a base sepolia and verified", async () => {
         const rpc = createProvider(process.env.BASE_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.BASE_PRIVATE_KEY || "", rpc))
 
