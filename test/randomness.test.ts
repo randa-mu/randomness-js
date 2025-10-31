@@ -47,7 +47,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n, bufferPercent: 10n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -73,7 +73,7 @@ describe("randomness", () => {
         const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n, bufferPercent: 10n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
