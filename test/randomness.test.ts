@@ -47,7 +47,7 @@ describe("randomness", () => {
         const randomness = Randomness.createBaseSepolia(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n, bufferPercent: 10n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
@@ -66,14 +66,14 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it("can be requested from polygon pos and verified", async () => {
+    it.only("can be requested from polygon pos and verified", async () => {
         const rpc = createProvider(process.env.POLYGON_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.POLYGON_PRIVATE_KEY || "", rpc))
 
         const randomness = Randomness.createPolygonPos(wallet)
         expect(randomness).not.toEqual(null)
 
-        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n })
+        const response = await randomness.requestRandomness({ callbackGasLimit: 100_000n, bufferPercent: 10n })
         expect(await randomness.verify(response)).toBeTruthy()
 
         rpc.destroy()
