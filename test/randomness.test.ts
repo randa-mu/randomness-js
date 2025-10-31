@@ -66,7 +66,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it.only("can be requested from polygon pos and verified", async () => {
+    it("can be requested from polygon pos and verified", async () => {
         const rpc = createProvider(process.env.POLYGON_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.POLYGON_PRIVATE_KEY || "", rpc))
 
