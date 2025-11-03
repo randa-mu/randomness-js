@@ -11,11 +11,7 @@ This project provides a client-side SDK to request on-chain randomness from the 
 
 ### 🌐 Supported Networks
 
-| Network              | Chain ID  | Supported | Randomness Contract |
-|----------------------|-----------|-----------|-----------|
-| Filecoin Calibration | 314159    | ✅         |[0x91c7774C7476F3832919adE7690467DF91bfd919](https://calibration.filfox.info/en/address/0x91c7774C7476F3832919adE7690467DF91bfd919) |
-| Base Sepolia              | 84532         | ✅         | [0x455bfe4B1B4393b458d413E2B0778A95F9B84B82](https://sepolia.basescan.org/address/0x455bfe4B1B4393b458d413E2B0778A95F9B84B82) |
-| Polygon PoS            | 137  | ✅         | [0x455bfe4B1B4393b458d413E2B0778A95F9B84B82](https://polygonscan.com/address/0x455bfe4B1B4393b458d413E2B0778A95F9B84B82) |
+Please see the [list of supported networks](https://docs.dcipher.network/networks/randomness) in the dcipher documentation.
 
 ## 📦 Getting started
 
