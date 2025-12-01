@@ -22,6 +22,7 @@ import {
     AVALANCHE_C_CHAIN,
     OPTIMISM_SEPOLIA,
     ARBITRUM_SEPOLIA,
+    ARBITRUM_MAINNET,
     SEI_TESTNET
 } from "./networks"
 
@@ -263,6 +264,10 @@ export class Randomness {
 
     static createArbitrumSepolia(rpc: Signer | Provider): Randomness {
         return new Randomness(rpc, ARBITRUM_SEPOLIA)
+    }
+
+    static createArbitrumMainnet(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, ARBITRUM_MAINNET)
     }
 
     static createSeiTestnet(rpc: Signer | Provider): Randomness {
