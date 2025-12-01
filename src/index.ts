@@ -22,6 +22,7 @@ import {
     AVALANCHE_C_CHAIN,
     OPTIMISM_SEPOLIA,
     ARBITRUM_SEPOLIA,
+    ARBITRUM_MAINNET,
     SEI_TESTNET
 } from "./networks"
 
@@ -48,6 +49,7 @@ export type RandomnessVerificationConfig = {
 
 type RequestRandomnessParams = {
     callbackGasLimit: bigint
+    bufferPercent: bigint
     timeoutMs: number
     confirmations: number
     pollingIntervalMs: number
@@ -66,6 +68,7 @@ export class Randomness {
         this.contract = RandomnessSender__factory.connect(this.networkConfig.contractAddress, rpc)
         this.defaultRequestParams = {
             callbackGasLimit: networkConfig.callbackGasLimitDefault,
+            bufferPercent: 50n,
             timeoutMs: defaultRequestTimeoutMs,
             confirmations: 1,
             pollingIntervalMs: 500,
@@ -99,7 +102,7 @@ export class Randomness {
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas!;
 
         // 2. Use EIP-1559 pricing
-        const txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
+        const txGasPrice = maxFeePerGas + maxPriorityFeePerGas;
 
         // 3. Estimate request price using the selected txGasPrice
         const requestPrice = await this.contract.estimateRequestPriceNative(
@@ -108,7 +111,9 @@ export class Randomness {
         );
 
         // 4. Apply buffer (e.g. 100% = 2× total)
-        const bufferPercent = isFilecoin(Number(chainId)) ? 300n : 50n;
+        const bufferPercent = config.bufferPercent !== undefined
+            ? config.bufferPercent
+            : (isFilecoin(Number(chainId)) ? 300n : 100n);
         const valueToSend = requestPrice + (requestPrice * bufferPercent) / 100n;
 
         // 5. Estimate gas
@@ -191,7 +196,7 @@ export class Randomness {
      * @param callbackGasLimit The callbackGasLimit to use when fulfilling the request with a decryption key.
      * @returns The estimated request price and the transaction gas price used
      */
-    async calculateRequestPriceNative(callbackGasLimit: bigint): Promise<[bigint, bigint]> {
+    async calculateRequestPriceNative(callbackGasLimit: bigint, config: Partial<RequestRandomnessParams> = this.defaultRequestParams): Promise<[bigint, bigint]> {
         if (this.rpc.provider == null) {
             throw Error("RPC requires a provider to request randomness")
         }
@@ -209,7 +214,7 @@ export class Randomness {
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas!;
 
         // 2. Use EIP-1559 pricing
-        const txGasPrice = (maxFeePerGas + maxPriorityFeePerGas) * 10n;
+        const txGasPrice = maxFeePerGas + maxPriorityFeePerGas;
 
         // 3. Estimate request price using the selected txGasPrice
         const requestPrice = await this.contract.estimateRequestPriceNative(
@@ -218,7 +223,9 @@ export class Randomness {
         );
 
         // 4. Apply buffer (e.g. 100% = 2× total)
-        const bufferPercent = isFilecoin(Number(chainId)) ? 300n : 100n;
+        const bufferPercent = config.bufferPercent !== undefined
+            ? config.bufferPercent
+            : (isFilecoin(Number(chainId)) ? 300n : 100n);
         const valueToSend = requestPrice + (requestPrice * bufferPercent) / 100n;
 
         return [valueToSend, txGasPrice];
@@ -257,6 +264,10 @@ export class Randomness {
 
     static createArbitrumSepolia(rpc: Signer | Provider): Randomness {
         return new Randomness(rpc, ARBITRUM_SEPOLIA)
+    }
+
+    static createArbitrumMainnet(rpc: Signer | Provider): Randomness {
+        return new Randomness(rpc, ARBITRUM_MAINNET)
     }
 
     static createSeiTestnet(rpc: Signer | Provider): Randomness {

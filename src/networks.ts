@@ -133,6 +133,19 @@ export const ARBITRUM_SEPOLIA: NetworkConfig = {
     gasMultiplierDefault: 10n,
 }
 
+export const ARBITRUM_MAINNET: NetworkConfig = {
+    name: "arbitrum_mainnet",
+    chainId: 42161n,
+    contractAddress: "0x3BF0529293ff2F1901B2f301e56447Dcd56CBaF9",
+    dst: "dcipher-randomness-v01-BN254G1_XMD:KECCAK-256_SVDW_RO_0x000000000000000000000000000000000000000000000000000000000000a4b1_",
+    gasLimit: 100_000,
+    maxFeePerGas: ethers.parseUnits("0.2", "gwei"),
+    maxPriorityFeePerGas: ethers.parseUnits("0.2", "gwei"),
+    gasBufferPercent: 100n,
+    callbackGasLimitDefault: 1_000_000n,
+    gasMultiplierDefault: 10n,
+}
+
 export const SEI_TESTNET: NetworkConfig = {
     name: "sei_testnet",
     chainId: 1328n,
