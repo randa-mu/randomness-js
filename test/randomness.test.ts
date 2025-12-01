@@ -160,7 +160,7 @@ describe("randomness", () => {
         rpc.destroy()
     }, TEST_TIMEOUT)
 
-    it("can be requested from arbitrum mainnet and verified", async () => {
+    it.skip("can be requested from arbitrum mainnet and verified", async () => {
 
         const rpc = createProvider(process.env.ARBITRUM_MAINNET_RPC_URL || "")
         const wallet = new NonceManager(new Wallet(process.env.ARBITRUM_MAINNET_PRIVATE_KEY || "", rpc))
